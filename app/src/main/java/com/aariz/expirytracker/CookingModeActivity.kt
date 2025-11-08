@@ -60,6 +60,9 @@ class CookingModeActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private var textToSpeech: TextToSpeech? = null
     private var isTtsReady = false
     private val SPEECH_REQUEST_CODE = 100
+    private var isVoiceEnabled = false
+    private var isListening = false
+    private var audioPermissionGranted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -137,11 +140,53 @@ class CookingModeActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
         }
 
         voiceButton.setOnClickListener {
-            startVoiceRecognition()
+            if (!audioPermissionGranted) {
+                Toast.makeText(this, "Audio permission required", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            toggleVoiceMode()
         }
 
         exitButton.setOnClickListener {
             showExitConfirmation()
+        }
+    }
+
+    private fun toggleVoiceMode() {
+        if (isVoiceEnabled) {
+            // Disable voice mode
+            isVoiceEnabled = false
+            voiceButton.alpha = 0.5f
+            voiceIndicatorCard.visibility = View.GONE
+            speak("Voice commands disabled")
+            Toast.makeText(this, "Voice commands disabled", Toast.LENGTH_SHORT).show()
+        } else {
+            // Enable voice mode
+            isVoiceEnabled = true
+            voiceButton.alpha = 1.0f
+            speak("Voice commands enabled. Say next, previous, repeat, or pause")
+            startListening()
+        }
+    }
+
+    private fun startListening() {
+        if (!isVoiceEnabled || isListening) return
+
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            putExtra(RecognizerIntent.EXTRA_PROMPT, "Say 'next', 'previous', 'repeat', or 'pause'")
+        }
+
+        try {
+            isListening = true
+            voiceIndicatorCard.visibility = View.VISIBLE
+            startActivityForResult(intent, SPEECH_REQUEST_CODE)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Voice recognition not available", Toast.LENGTH_SHORT).show()
+            voiceIndicatorCard.visibility = View.GONE
+            isListening = false
         }
     }
 
@@ -262,7 +307,7 @@ class CookingModeActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     private fun onTimerComplete() {
         isTimerRunning = false
         timerText.text = "00:00"
-        timerStatus.text = "✅ Step Complete!"
+        timerStatus.text = "✔ Step Complete!"
         timerText.setTextColor(getColor(R.color.green_primary))
 
         // Vibrate or play sound (optional)
@@ -301,33 +346,25 @@ class CookingModeActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
     // ========== VOICE RECOGNITION ==========
 
-    private fun startVoiceRecognition() {
-        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
-            putExtra(RecognizerIntent.EXTRA_PROMPT, "Say 'next', 'previous', 'repeat', or 'pause'")
-        }
-
-        try {
-            voiceIndicatorCard.visibility = View.VISIBLE
-            startActivityForResult(intent, SPEECH_REQUEST_CODE)
-        } catch (e: Exception) {
-            Toast.makeText(this, "Voice recognition not available", Toast.LENGTH_SHORT).show()
-            voiceIndicatorCard.visibility = View.GONE
-        }
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        voiceIndicatorCard.visibility = View.GONE
+        if (requestCode == SPEECH_REQUEST_CODE) {
+            voiceIndicatorCard.visibility = View.GONE
 
-        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
-            val results = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-            val spokenText = results?.get(0)?.lowercase(Locale.getDefault()) ?: ""
+            if (resultCode == RESULT_OK) {
+                val results = data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+                val spokenText = results?.get(0)?.lowercase(Locale.getDefault()) ?: ""
 
-            handleVoiceCommand(spokenText)
+                handleVoiceCommand(spokenText)
+            }
+
+            isListening = false
+
+            // Continue listening if voice mode is still enabled
+            if (isVoiceEnabled) {
+                startListening()
+            }
         }
     }
 
@@ -398,6 +435,8 @@ class CookingModeActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
                 arrayOf(Manifest.permission.RECORD_AUDIO),
                 RECORD_AUDIO_PERMISSION_CODE
             )
+        } else {
+            audioPermissionGranted = true
         }
     }
 
@@ -410,8 +449,10 @@ class CookingModeActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
 
         if (requestCode == RECORD_AUDIO_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Voice commands enabled", Toast.LENGTH_SHORT).show()
+                audioPermissionGranted = true
+                Toast.makeText(this, "Voice commands available - tap mic icon to enable", Toast.LENGTH_SHORT).show()
             } else {
+                audioPermissionGranted = false
                 Toast.makeText(this, "Voice commands disabled - permission denied", Toast.LENGTH_SHORT).show()
             }
         }
@@ -422,6 +463,7 @@ class CookingModeActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
     override fun onDestroy() {
         super.onDestroy()
         countDownTimer?.cancel()
+        isVoiceEnabled = false
         textToSpeech?.stop()
         textToSpeech?.shutdown()
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
