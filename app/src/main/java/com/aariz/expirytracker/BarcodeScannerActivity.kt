@@ -51,7 +51,10 @@ class BarcodeScannerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_barcode_scanner)
 
+        // Enable edge-to-edge display
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // Apply window insets to header and bottom bar
         findViewById<View>(R.id.header_section).applyHeaderInsets()
         findViewById<View>(R.id.bottom_bar).applyBottomNavInsets()
 
@@ -271,11 +274,11 @@ class BarcodeScannerActivity : AppCompatActivity() {
 
         // Show appropriate message based on what we found
         val message = when {
-            gs1Data?.expiryDate?.isNotEmpty() == true -> {
-                "GS1 code scanned! Expiry date found: ${gs1Data.expiryDate}"
+            gs1Data?.expiryDate?.isNotEmpty() == true && productResult.isSuccess && productResult.getOrNull()?.productInfo != null -> {
+                "Barcode scanned! Product info and expiry date loaded."
             }
-            gs1Data != null -> {
-                "GS1 code scanned! ${if (productResult.isSuccess && productResult.getOrNull()?.productInfo != null) "Product info found." else "Manual entry required."}"
+            gs1Data?.expiryDate?.isNotEmpty() == true -> {
+                "Barcode scanned! Expiry date found: ${gs1Data.expiryDate}"
             }
             productResult.isSuccess && productResult.getOrNull()?.productInfo != null -> {
                 "Barcode scanned! Product information loaded."

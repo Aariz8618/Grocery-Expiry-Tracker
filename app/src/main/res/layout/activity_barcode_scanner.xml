@@ -19,18 +19,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:scaleType="fillCenter" />
 
-    <!-- Camera Preview
-    <View
-        android:id="@+id/preview_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#333333"
-        app:layout_constraintBottom_toTopOf="@id/bottom_controls"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" /> -->
-
     <!-- Overlay for scanning frame -->
     <View
         android:id="@+id/scan_overlay"
@@ -76,7 +64,7 @@
 
     </LinearLayout>
 
-    <!-- Enhanced Top bar with GS1 support indicator -->
+    <!-- Enhanced Top bar -->
     <LinearLayout
         android:id="@+id/header_section"
         android:layout_width="0dp"
@@ -84,9 +72,8 @@
         android:orientation="vertical"
         android:gravity="center"
         android:paddingHorizontal="16dp"
-        android:paddingVertical="16dp"
+        android:paddingBottom="16dp"
         android:background="@drawable/rounded_background_semi_transparent"
-        android:layout_marginHorizontal="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -103,26 +90,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="Standard Barcodes + GS1 QR/DataMatrix"
+            android:text="Scan any product barcode"
             android:textColor="@color/white"
             android:textSize="12sp"
             android:alpha="0.8" />
 
     </LinearLayout>
 
-    <!-- Scanning animation line (optional visual enhancement) -->
-    <View
-        android:id="@+id/scan_line"
-        android:layout_width="260dp"
-        android:layout_height="2dp"
-        android:background="@color/primary"
-        android:alpha="0.7"
-        app:layout_constraintStart_toStartOf="@id/scan_overlay"
-        app:layout_constraintEnd_toEndOf="@id/scan_overlay"
-        app:layout_constraintTop_toTopOf="@id/scan_overlay"
-        app:layout_constraintBottom_toBottomOf="@id/scan_overlay" />
-
-    <!-- Corner indicators for better scanning guidance -->
+    <!-- Corner indicators -->
     <ImageView
         android:id="@+id/corner_top_left"
         android:layout_width="20dp"

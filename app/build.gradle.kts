@@ -59,7 +59,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -71,8 +70,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-storage")  // Added back for FeedbackActivity
-
+    implementation("com.google.firebase:firebase-storage")
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
@@ -106,7 +104,7 @@ dependencies {
     // Image Loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
-    // Image compression (optional but recommended)
+    // Image compression
     implementation("id.zelory:compressor:3.0.1")
 
     // Cloudinary for image upload
@@ -118,4 +116,11 @@ dependencies {
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    implementation("com.google.android.gms:play-services-ads:24.7.0")
+    implementation("androidx.credentials:credentials:1.6.0-beta03")
+    implementation("androidx.credentials:credentials-play-services-auth:1.6.0-beta03")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:<latest version>")
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
 }

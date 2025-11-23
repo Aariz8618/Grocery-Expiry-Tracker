@@ -277,7 +277,7 @@
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
-                        android:src="@drawable/ic_minus"
+                        android:src="@drawable/ic_remove"
                         app:tint="@color/green_primary" />
                 </LinearLayout>
 

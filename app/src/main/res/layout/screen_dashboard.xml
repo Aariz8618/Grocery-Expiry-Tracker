@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -136,7 +137,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/filter_section"
-        android:layout_above="@+id/bottom_nav"
+        android:layout_above="@+id/adView"
         android:background="@color/white">
 
         <!-- Grocery Items List -->
@@ -221,12 +222,23 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_above="@id/bottom_nav"
+        android:layout_above="@id/adView"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:src="@drawable/ic_plus"
+        android:src="@drawable/add"
+        app:tint="@android:color/white"
         app:backgroundTint="@color/green_primary"
-        app:tint="@android:color/white" />
+        app:maxImageSize="30dp" />
+
+
+    <!-- Ad View (above bottom nav) -->
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_above="@+id/bottom_nav"
+        ads:adSize="BANNER"
+        ads:adUnitId="ca-app-pub-6955619859685115/9852547709" />
 
     <!-- Bottom Navigation -->
     <LinearLayout
@@ -312,7 +324,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_recipe"
+                android:src="@drawable/recipe"
                 app:tint="#9CA3AF" />
 
             <TextView
@@ -340,7 +352,7 @@
             <ImageView
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_settings"
+                android:src="@drawable/settings"
                 app:tint="#9CA3AF" />
 
             <TextView

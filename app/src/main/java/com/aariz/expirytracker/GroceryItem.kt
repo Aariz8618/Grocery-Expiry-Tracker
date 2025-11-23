@@ -35,13 +35,3 @@ data class GroceryItem(
         updatedAt = Date()
     )
 }
-
-// User data class for users collection
-data class User(
-    @DocumentId
-    val id: String = "",
-    val name: String = "",
-    val email: String = ""
-) {
-    constructor() : this("", "", "")
-}

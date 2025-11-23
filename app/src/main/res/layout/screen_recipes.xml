@@ -113,7 +113,7 @@
                 <ImageView
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:src="@drawable/ic_recipe"
+                    android:src="@drawable/recipe"
                     app:tint="@color/gray_300"
                     android:layout_marginBottom="16dp" />
 

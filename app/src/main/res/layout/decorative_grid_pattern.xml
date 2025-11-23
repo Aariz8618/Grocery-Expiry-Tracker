@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="true"
+    android:clipToPadding="true">
+
+    <!-- Grid of squares -->
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnCount="6"
+        android:rowCount="7"
+        android:layout_marginTop="-80dp"
+        android:layout_marginStart="90dp">
+
+        <!-- Row 1 -->
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+
+        <!-- Row 2 -->
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+
+        <!-- Row 3 -->
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+
+        <!-- Row 4 -->
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+
+        <!-- Row 5 -->
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+
+        <!-- Row 6 -->
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+
+        <!-- Row 7 -->
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+        <View style="@style/GridSquare" />
+    </GridLayout>
+
+    <!-- Radial gradient overlay at top -->
+    <View
+        android:layout_width="382dp"
+        android:layout_height="325dp"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_marginTop="-200dp"
+        android:background="@drawable/bg_radial_gradient" />
+
+</FrameLayout>

@@ -27,17 +27,27 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/freshtrack_logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/freshtrack_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.ExpiryTracker">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-6955619859685115~9523861753" />
+
 
         <!-- Activities -->
         <activity
             android:name=".BarcodeScannerActivity"
             android:exported="false"
             android:theme="@style/Theme.ExpiryTracker.FullScreen" />
+        <activity
+            android:name=".OnboardingActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.ExpiryTracker" />
         <activity
             android:name=".SettingsActivity"
             android:exported="false" />

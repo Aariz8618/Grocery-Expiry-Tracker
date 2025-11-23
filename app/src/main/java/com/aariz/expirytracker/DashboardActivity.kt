@@ -10,7 +10,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.PopupMenu
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -21,15 +20,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import com.google.firebase.firestore.FirebaseFirestore
 
 class DashboardActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
@@ -115,6 +117,12 @@ class DashboardActivity : AppCompatActivity() {
         // Enable edge-to-edge display
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
+        MobileAds.initialize(this)
+
+        val adView = findViewById<AdView>(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+
         auth = FirebaseAuth.getInstance()
         firestoreRepository = FirestoreRepository()
         firestore = FirebaseFirestore.getInstance()
@@ -156,12 +164,28 @@ class DashboardActivity : AppCompatActivity() {
 
     private fun setupWindowInsets() {
         // Apply insets to header section
-        // This adds top, left, and right padding while preserving bottom padding
-        headerSection.applyHeaderInsets()
+        ViewCompat.setOnApplyWindowInsetsListener(headerSection) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(
+                view.paddingLeft,
+                systemBars.top,
+                view.paddingRight,
+                view.paddingBottom
+            )
+            insets
+        }
 
         // Apply insets to bottom navigation
-        // This adds bottom, left, and right padding while preserving top padding
-        bottomNav.applyBottomNavInsets()
+        ViewCompat.setOnApplyWindowInsetsListener(bottomNav) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(
+                view.paddingLeft,
+                view.paddingTop,
+                view.paddingRight,
+                systemBars.bottom
+            )
+            insets
+        }
     }
 
     private fun checkAndRequestNotificationPermission() {

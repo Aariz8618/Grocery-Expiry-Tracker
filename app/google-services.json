@@ -12,7 +12,20 @@
           "package_name": "com.aariz.expirytracker"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "747967208472-llsgo4ieacel9vqle7041n927c70i12i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aariz.expirytracker",
+            "certificate_hash": "67b96f35d47a8a2917a0739909cb7f5241e6143c"
+          }
+        },
+        {
+          "client_id": "747967208472-72iigmk8184uhd02008cfd53rboca4uf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBfVusyf_bQiYQO9OXxt1Wokf8TUD7JyQU"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "747967208472-72iigmk8184uhd02008cfd53rboca4uf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -93,6 +93,15 @@ object CloudinaryManager {
         onSuccess: (String) -> Unit,
         onError: (String) -> Unit
     ) {
-        uploadImage(context, imageUri, "profile_images", "feedback_screenshots", onSuccess, onError)
+        uploadImage(context, imageUri, "feedback_screenshots", "feedback_screenshots", onSuccess, onError)
+    }
+
+    fun uploadProductImage(
+        context: Context,
+        imageUri: Uri,
+        onSuccess: (String) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        uploadImage(context, imageUri, "Product_images", "product_images", onSuccess, onError)
     }
 }

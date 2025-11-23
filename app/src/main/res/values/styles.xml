@@ -27,5 +27,13 @@
         <!-- Checkbox colors -->
         <item name="colorControlActivated">@color/green_primary</item>
         <item name="colorControlNormal">@color/gray_400</item>
+
+    </style>
+
+    <!-- Grid Square Style -->
+    <style name="GridSquare">
+        <item name="android:layout_width">51dp</item>
+        <item name="android:layout_height">51dp</item>
+        <item name="android:background">@drawable/bg_grid_square</item>
     </style>
 </resources>

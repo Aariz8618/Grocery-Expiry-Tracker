@@ -1,10 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- res/drawable/gradient_background.xml -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <gradient
-        android:angle="13"
-        android:startColor="@color/green_200"
-        android:centerColor="#FFFFFF"
-        android:endColor="@color/green_50"
-        android:type="linear" />
-</shape>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="450dp"
+    android:height="900dp"
+    android:viewportWidth="450"
+    android:viewportHeight="900">
+  <path
+      android:pathData="M0,0h450v900h-450z"
+      android:fillColor="#FFFFFF"/>
+  <path
+      android:pathData="M157.5,900C171.1,879.5 184.7,859 197.5,842.4C210.2,825.7 222.1,812.8 223,790.7C223.8,768.5 213.6,737 221.3,717.6C229,698.3 254.6,691 274.8,680.3C295,669.6 309.8,655.4 327.6,645.9C345.5,636.4 366.6,631.7 387.5,626C408.4,620.4 429.2,614 450,607.5L450,900Z"
+      android:fillColor="@color/green_200"/>
+  <path
+      android:pathData="M255,900C264.1,886.3 273.2,872.7 281.7,861.6C290.2,850.5 298.1,841.9 298.6,827.1C299.2,812.3 292.4,791.3 297.5,778.4C302.7,765.5 319.7,760.7 333.2,753.5C346.7,746.4 356.5,736.9 368.4,730.6C380.4,724.3 394.4,721.1 408.3,717.4C422.3,713.6 436.1,709.3 450,705L450,900Z"
+      android:fillColor="@color/green_400"/>
+  <path
+      android:pathData="M352.5,900C357,893.2 361.6,886.3 365.8,880.8C370.1,875.2 374,870.9 374.3,863.6C374.6,856.2 371.2,845.7 373.8,839.2C376.3,832.8 384.9,830.3 391.6,826.8C398.3,823.2 403.3,818.5 409.2,815.3C415.2,812.1 422.2,810.6 429.2,808.7C436.1,806.8 443.1,804.7 450,802.5L450,900Z"
+      android:fillColor="@color/green_600"/>
+  <path
+      android:pathData="M292.5,0C293.6,22.8 294.7,45.6 285.2,65.1C275.7,84.6 255.5,100.7 238.8,115C222,129.3 208.6,141.8 198.6,158.4C188.6,175 182.1,195.7 170.2,213.4C158.4,231.2 141.2,246 121.9,253.2C102.6,260.3 81.2,259.9 60.5,265.2C39.8,270.5 19.9,281.5 0,292.5L0,0Z"
+      android:fillColor="@color/green_200"/>
+  <path
+      android:pathData="M195,0C195.7,15.2 196.5,30.4 190.1,43.4C183.8,56.4 170.4,67.1 159.2,76.7C148,86.2 139,94.5 132.4,105.6C125.7,116.6 121.4,130.5 113.5,142.3C105.6,154.1 94.1,164 81.3,168.8C68.4,173.6 54.1,173.3 40.4,176.8C26.6,180.3 13.3,187.7 0,195L0,0Z"
+      android:fillColor="@color/green_400"/>
+  <path
+      android:pathData="M97.5,0C97.9,7.6 98.2,15.2 95.1,21.7C91.9,28.2 85.2,33.6 79.6,38.3C74,43.1 69.5,47.3 66.2,52.8C62.9,58.3 60.7,65.2 56.7,71.1C52.8,77.1 47.1,82 40.6,84.4C34.2,86.8 27.1,86.6 20.2,88.4C13.3,90.2 6.6,93.8 0,97.5L0,0Z"
+      android:fillColor="@color/green_600"/>
+</vector>

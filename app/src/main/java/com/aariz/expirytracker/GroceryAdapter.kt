@@ -1,5 +1,6 @@
 package com.aariz.expirytracker
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.google.android.material.card.MaterialCardView
 import java.text.SimpleDateFormat
 import java.util.*
@@ -50,8 +55,12 @@ class GroceryAdapter(
             expiryDate.text = "Expires: ${item.expiryDate}"
             quantity.text = "Qty: ${item.quantity}"
 
-            // Set item icon based on category using recalculated status
-            setItemIcon(item.category, actualStatus)
+            // Load image if available, otherwise show category icon
+            if (item.imageUrl.isNotEmpty()) {
+                loadProductImage(item.imageUrl, item.category, actualStatus)
+            } else {
+                setItemIcon(item.category, actualStatus)
+            }
 
             // Set status badge text, colors, and indicator based on RECALCULATED status
             when (actualStatus) {
@@ -60,7 +69,6 @@ class GroceryAdapter(
                     statusBadge.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.black))
                     statusBadge.setBackgroundResource(R.drawable.status_badge_used)
                     statusIndicator.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.orange_400))
-                    // Set card background to light green for used items
                     cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, R.color.orange_200))
                 }
                 "expired" -> {
@@ -75,7 +83,6 @@ class GroceryAdapter(
                     statusBadge.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                     statusBadge.setBackgroundResource(R.drawable.status_badge_expired)
                     statusIndicator.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.red_500))
-                    // Reset card background
                     cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                 }
                 "expiring" -> {
@@ -89,7 +96,6 @@ class GroceryAdapter(
                     statusBadge.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                     statusBadge.setBackgroundResource(R.drawable.status_badge_expiring)
                     statusIndicator.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.yellow_500))
-                    // Reset card background
                     cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                 }
                 else -> { // "fresh"
@@ -97,7 +103,6 @@ class GroceryAdapter(
                     statusBadge.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                     statusBadge.setBackgroundResource(R.drawable.status_badge_fresh)
                     statusIndicator.setBackgroundColor(ContextCompat.getColor(itemView.context, R.color.green_500))
-                    // Reset card background
                     cardView.setCardBackgroundColor(ContextCompat.getColor(itemView.context, android.R.color.white))
                 }
             }
@@ -105,6 +110,96 @@ class GroceryAdapter(
             // Set click listener with recalculated values
             cardView.setOnClickListener {
                 onItemClick(item.copy(daysLeft = actualDaysLeft, status = actualStatus))
+            }
+        }
+
+        private fun loadProductImage(imageUrl: String, category: String, status: String) {
+            // IMPORTANT: Clear both color filter AND tint from XML
+            itemIcon.clearColorFilter()
+            itemIcon.imageTintList = null
+
+            // Log for debugging
+            android.util.Log.d("GroceryAdapter", "Loading image URL: $imageUrl")
+
+            // Determine if it's a Cloudinary URL or a content URI
+            val isCloudinaryUrl = imageUrl.startsWith("http://") || imageUrl.startsWith("https://")
+
+            if (isCloudinaryUrl) {
+                // Load from Cloudinary (or any web URL)
+                Glide.with(itemView.context)
+                    .load(imageUrl)
+                    .centerCrop()
+                    .placeholder(getCategoryIconResource(category))
+                    .error(getCategoryIconResource(category))
+                    .listener(object : RequestListener<android.graphics.drawable.Drawable> {
+                        override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any?,
+                            target: Target<android.graphics.drawable.Drawable>,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            android.util.Log.e("GroceryAdapter", "Failed to load image from URL: ${e?.message}")
+                            e?.logRootCauses("GroceryAdapter")
+                            // Fall back to category icon
+                            setItemIcon(category, status)
+                            return false
+                        }
+
+                        override fun onResourceReady(
+                            resource: android.graphics.drawable.Drawable,
+                            model: Any,
+                            target: Target<android.graphics.drawable.Drawable>,
+                            dataSource: com.bumptech.glide.load.DataSource,
+                            isFirstResource: Boolean
+                        ): Boolean {
+                            android.util.Log.d("GroceryAdapter", "Image loaded successfully from: $dataSource")
+                            return false
+                        }
+                    })
+                    .into(itemIcon)
+            } else if (imageUrl.startsWith("content://")) {
+                // Try to load from content URI (legacy support for old items)
+                try {
+                    val uri = Uri.parse(imageUrl)
+                    Glide.with(itemView.context)
+                        .load(uri)
+                        .centerCrop()
+                        .placeholder(getCategoryIconResource(category))
+                        .error(getCategoryIconResource(category))
+                        .listener(object : RequestListener<android.graphics.drawable.Drawable> {
+                            override fun onLoadFailed(
+                                e: GlideException?,
+                                model: Any?,
+                                target: Target<android.graphics.drawable.Drawable>,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                android.util.Log.e("GroceryAdapter", "Failed to load image from URI: ${e?.message}")
+                                android.util.Log.w("GroceryAdapter", "Content URI may have expired. Consider re-uploading the image.")
+                                // Fall back to category icon
+                                setItemIcon(category, status)
+                                return false
+                            }
+
+                            override fun onResourceReady(
+                                resource: android.graphics.drawable.Drawable,
+                                model: Any,
+                                target: Target<android.graphics.drawable.Drawable>,
+                                dataSource: com.bumptech.glide.load.DataSource,
+                                isFirstResource: Boolean
+                            ): Boolean {
+                                return false
+                            }
+                        })
+                        .into(itemIcon)
+                } catch (e: Exception) {
+                    android.util.Log.e("GroceryAdapter", "Error parsing URI: ${e.message}")
+                    // Fall back to category icon
+                    setItemIcon(category, status)
+                }
+            } else {
+                // Empty or invalid URL, show category icon
+                android.util.Log.w("GroceryAdapter", "Invalid or empty image URL")
+                setItemIcon(category, status)
             }
         }
 
@@ -151,20 +246,7 @@ class GroceryAdapter(
         }
 
         private fun setItemIcon(category: String, status: String) {
-            // Set icon based on category (with fallbacks for missing drawables)
-            val iconRes = when (category.lowercase()) {
-                "fruits", "fruit" -> getDrawableResource("fruit", R.drawable.fruits)
-                "dairy" -> getDrawableResource("milk", R.drawable.milk)
-                "vegetables", "vegetable" -> getDrawableResource("vegetable", R.drawable.vegetables)
-                "meat" -> getDrawableResource("meat", R.drawable.meat)
-                "bakery" -> getDrawableResource("breads", R.drawable.bread)
-                "frozen" -> getDrawableResource("frozen", R.drawable.frozen)
-                "beverages" -> getDrawableResource("beverages", R.drawable.beverages)
-                "cereals" -> getDrawableResource("cereals", R.drawable.cereals)
-                "sweets" -> getDrawableResource("sweets", R.drawable.sweets)
-                else -> getDrawableResource("grocery", R.drawable.ic_grocery)
-            }
-
+            val iconRes = getCategoryIconResource(category)
             itemIcon.setImageResource(iconRes)
 
             // Set icon tint based on status for visual hierarchy
@@ -176,10 +258,24 @@ class GroceryAdapter(
             }
 
             try {
-                itemIcon.setColorFilter(ContextCompat.getColor(itemView.context, tintColor))
+                itemIcon.imageTintList = ContextCompat.getColorStateList(itemView.context, tintColor)
             } catch (e: Exception) {
-                // Fallback to gray if color resource doesn't exist
-                itemIcon.setColorFilter(ContextCompat.getColor(itemView.context, R.color.gray_600))
+                itemIcon.imageTintList = ContextCompat.getColorStateList(itemView.context, R.color.gray_600)
+            }
+        }
+
+        private fun getCategoryIconResource(category: String): Int {
+            return when (category.lowercase()) {
+                "fruits", "fruit" -> getDrawableResource("fruit", R.drawable.fruits)
+                "dairy" -> getDrawableResource("milk", R.drawable.milk)
+                "vegetables", "vegetable" -> getDrawableResource("vegetable", R.drawable.vegetables)
+                "meat" -> getDrawableResource("meat", R.drawable.meat)
+                "bakery" -> getDrawableResource("breads", R.drawable.bread)
+                "frozen" -> getDrawableResource("frozen", R.drawable.frozen)
+                "beverages" -> getDrawableResource("beverages", R.drawable.beverages)
+                "cereals" -> getDrawableResource("cereals", R.drawable.cereals)
+                "sweets" -> getDrawableResource("sweets", R.drawable.sweets)
+                else -> getDrawableResource("grocery", R.drawable.ic_grocery)
             }
         }
 

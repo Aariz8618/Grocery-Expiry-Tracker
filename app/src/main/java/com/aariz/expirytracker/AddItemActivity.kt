@@ -2,6 +2,7 @@ package com.aariz.expirytracker
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -41,16 +42,28 @@ class AddItemActivity : AppCompatActivity() {
     private lateinit var barcodeText: TextView
     private lateinit var gs1InfoLayout: LinearLayout
     private lateinit var gs1InfoText: TextView
+    private lateinit var addImageButton: LinearLayout
+    private lateinit var removeImageButton: ImageView
 
     private var selectedCategory: String = ""
     private var selectedPurchaseDate: String = ""
     private var selectedExpiryDate: String = ""
     private var scannedBarcode: String = ""
     private var productImageUrl: String = ""
+    private var userUploadedImageUri: Uri? = null
     private var isGS1Code: Boolean = false
 
     private lateinit var firestoreRepository: FirestoreRepository
     private lateinit var auth: FirebaseAuth
+
+    // Activity Result Launcher for image picker
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            handleImageSelection(it)
+        }
+    }
 
     // Activity Result Launcher for barcode scanner
     private val barcodeScannerLauncher = registerForActivityResult(
@@ -92,7 +105,7 @@ class AddItemActivity : AppCompatActivity() {
             try {
                 val user = User(
                     id = currentUser.uid,
-                    name = currentUser.displayName ?: "User",
+                    firstName  = currentUser.displayName ?: "User",
                     email = currentUser.email ?: ""
                 )
                 firestoreRepository.createUserProfile(user)
@@ -116,6 +129,8 @@ class AddItemActivity : AppCompatActivity() {
         barcodeText = findViewById(R.id.barcode_text)
         gs1InfoLayout = findViewById(R.id.gs1_info_layout)
         gs1InfoText = findViewById(R.id.gs1_info_text)
+        addImageButton = findViewById(R.id.add_image_button)
+        removeImageButton = findViewById(R.id.remove_image_button)
         inputName.addTextChangedListener(TextCapitalizationWatcher())
     }
 
@@ -159,6 +174,52 @@ class AddItemActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.clear_barcode_button).setOnClickListener {
             clearBarcodeInfo()
         }
+
+        // Add image button
+        addImageButton.setOnClickListener {
+            imagePickerLauncher.launch("image/*")
+        }
+
+        // Remove image button
+        removeImageButton.setOnClickListener {
+            removeImage()
+        }
+    }
+
+    private fun handleImageSelection(uri: Uri) {
+        try {
+            userUploadedImageUri = uri
+            displayImage(uri.toString(), isUserUploaded = true)
+            Toast.makeText(this, "Image added successfully", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e("AddItemActivity", "Error loading image: ${e.message}")
+            Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun removeImage() {
+        userUploadedImageUri = null
+        productImageUrl = ""
+        hideImage()
+        Toast.makeText(this, "Image removed", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun displayImage(imageUrl: String, isUserUploaded: Boolean) {
+        productImageView.visibility = View.VISIBLE
+        addImageButton.visibility = View.GONE
+        removeImageButton.visibility = View.VISIBLE
+
+        Glide.with(this)
+            .load(imageUrl)
+            .placeholder(android.R.drawable.ic_menu_gallery)
+            .error(android.R.drawable.ic_menu_gallery)
+            .into(productImageView)
+    }
+
+    private fun hideImage() {
+        productImageView.visibility = View.GONE
+        addImageButton.visibility = View.VISIBLE
+        removeImageButton.visibility = View.GONE
     }
 
     private fun launchBarcodeScanner() {
@@ -206,16 +267,9 @@ class AddItemActivity : AppCompatActivity() {
             displayGS1Info(gs1ExpiryDate, gs1BatchLot, gs1SerialNumber, gs1ProductionDate, gs1BestBeforeDate, gs1GTIN)
         }
 
-        // Load product image if available
-        if (imageUrl.isNotEmpty()) {
-            productImageView.visibility = View.VISIBLE
-            Glide.with(this)
-                .load(imageUrl)
-                .placeholder(android.R.drawable.ic_menu_gallery)
-                .error(android.R.drawable.ic_menu_gallery)
-                .into(productImageView)
-        } else {
-            productImageView.visibility = View.GONE
+        // Load product image if available (only if user hasn't uploaded their own)
+        if (imageUrl.isNotEmpty() && userUploadedImageUri == null) {
+            displayImage(imageUrl, isUserUploaded = false)
         }
 
         // Handle different scenarios
@@ -336,11 +390,15 @@ class AddItemActivity : AppCompatActivity() {
 
     private fun clearBarcodeInfo() {
         scannedBarcode = ""
-        productImageUrl = ""
         isGS1Code = false
         barcodeInfoLayout.visibility = View.GONE
         gs1InfoLayout.visibility = View.GONE
-        productImageView.visibility = View.GONE
+
+        // Only clear product image if it came from barcode (not user uploaded)
+        if (userUploadedImageUri == null) {
+            productImageUrl = ""
+            hideImage()
+        }
 
         // Optionally clear the populated fields
         MaterialAlertDialogBuilder(this)
@@ -380,7 +438,7 @@ class AddItemActivity : AppCompatActivity() {
         // Hide info layouts initially
         barcodeInfoLayout.visibility = View.GONE
         gs1InfoLayout.visibility = View.GONE
-        productImageView.visibility = View.GONE
+        hideImage()
     }
 
     private fun showCategoryDialog() {
@@ -445,6 +503,44 @@ class AddItemActivity : AppCompatActivity() {
             return
         }
 
+        // Show loading
+        showLoading(true)
+
+        // If user uploaded an image, upload it to Cloudinary first
+        if (userUploadedImageUri != null) {
+            CloudinaryManager.uploadProductImage(
+                context = this,
+                imageUri = userUploadedImageUri!!,
+                onSuccess = { cloudinaryUrl ->
+                    Log.d("AddItemActivity", "Image uploaded to Cloudinary: $cloudinaryUrl")
+                    // Save item with Cloudinary URL
+                    saveItemWithImageUrl(cloudinaryUrl)
+                },
+                onError = { error ->
+                    Log.e("AddItemActivity", "Cloudinary upload failed: $error")
+                    showLoading(false)
+                    // Show dialog asking if user wants to save without image
+                    MaterialAlertDialogBuilder(this)
+                        .setTitle("Image Upload Failed")
+                        .setMessage("Failed to upload image: $error\n\nDo you want to save the item without the image?")
+                        .setPositiveButton("Save Without Image") { _, _ ->
+                            showLoading(true)
+                            saveItemWithImageUrl(productImageUrl) // Use barcode image URL if available
+                        }
+                        .setNegativeButton("Cancel", null)
+                        .show()
+                }
+            )
+        } else {
+            // No user-uploaded image, save directly with barcode image URL if available
+            saveItemWithImageUrl(productImageUrl)
+        }
+    }
+
+    private fun saveItemWithImageUrl(imageUrl: String) {
+        val itemName = inputName.text.toString().trim()
+        val currentUser = auth.currentUser ?: return
+
         val daysLeft = calculateDaysLeft(selectedExpiryDate)
         val status = determineStatus(daysLeft)
         val now = Date()
@@ -460,13 +556,12 @@ class AddItemActivity : AppCompatActivity() {
             status = status,
             daysLeft = daysLeft,
             barcode = scannedBarcode,
-            imageUrl = productImageUrl,
+            imageUrl = imageUrl,
             isGS1 = isGS1Code,
             createdAt = now,
             updatedAt = now
         )
 
-        showLoading(true)
         lifecycleScope.launch {
             try {
                 val result = firestoreRepository.addGroceryItem(groceryItem)
@@ -565,7 +660,8 @@ class AddItemActivity : AppCompatActivity() {
                 selectedCategory.isNotEmpty() ||
                 selectedExpiryDate.isNotEmpty() ||
                 quantity != 1 ||
-                scannedBarcode.isNotEmpty()
+                scannedBarcode.isNotEmpty() ||
+                userUploadedImageUri != null
     }
 
     private fun showDiscardChangesDialog() {

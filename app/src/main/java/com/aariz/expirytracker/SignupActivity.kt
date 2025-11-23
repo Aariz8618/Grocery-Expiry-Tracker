@@ -1,41 +1,98 @@
 package com.aariz.expirytracker
 
 import android.content.Intent
+import android.content.IntentSender
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SignupActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var oneTapClient: SignInClient
+    private lateinit var signInRequest: BeginSignInRequest
+    private lateinit var firestoreRepository: FirestoreRepository
     private var isPasswordVisible = false
-    private var isConfirmPasswordVisible = false
+
+    // Register for activity result - One Tap Sign-In
+    private val oneTapSignInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartIntentSenderForResult()
+    ) { result ->
+        try {
+            val credential = oneTapClient.getSignInCredentialFromIntent(result.data)
+            val idToken = credential.googleIdToken
+            when {
+                idToken != null -> {
+                    firebaseAuthWithGoogle(idToken)
+                }
+                else -> {
+                    Log.d("SignupAuth", "No ID token!")
+                    Toast.makeText(this, "Google Sign-In failed", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } catch (e: ApiException) {
+            Log.w("SignupAuth", "One Tap sign in failed", e)
+            Toast.makeText(this, "Google Sign-In failed: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.screen_signup)
 
         auth = FirebaseAuth.getInstance()
+        firestoreRepository = FirestoreRepository()
 
+        // Initialize One Tap Sign-In client
+        oneTapClient = Identity.getSignInClient(this)
+
+        // Configure One Tap Sign-In request
+        signInRequest = BeginSignInRequest.builder()
+            .setGoogleIdTokenRequestOptions(
+                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                    .setSupported(true)
+                    .setServerClientId(getString(R.string.default_web_client_id))
+                    .setFilterByAuthorizedAccounts(false)
+                    .build()
+            )
+            .setAutoSelectEnabled(false)
+            .build()
+
+        val firstNameField = findViewById<EditText>(R.id.input_first_name)
+        val lastNameField = findViewById<EditText>(R.id.input_last_name)
         val emailField = findViewById<EditText>(R.id.input_email)
         val passwordField = findViewById<EditText>(R.id.input_password)
-        val confirmPasswordField = findViewById<EditText>(R.id.input_confirm_password)
-        val createAccountButton = findViewById<LinearLayout>(R.id.button_create_account)
-        val loginRedirect = findViewById<LinearLayout>(R.id.button_login_redirect)
-
-        // Password visibility toggles
+        val registerButton = findViewById<TextView>(R.id.button_register)
         val togglePasswordVisibility = findViewById<ImageView>(R.id.toggle_password_visibility)
-        val toggleConfirmPasswordVisibility = findViewById<ImageView>(R.id.toggle_confirm_password_visibility)
+        val googleButton = findViewById<FrameLayout>(R.id.button_google)
+        val facebookButton = findViewById<FrameLayout>(R.id.button_facebook)
+        val signinLink = findViewById<TextView>(R.id.text_signin)
 
-        // Setup password visibility toggles
+        // Navigation to Sign In
+        signinLink.setOnClickListener {
+            finish()
+        }
+
+        // Password visibility toggle
         togglePasswordVisibility.setOnClickListener {
             isPasswordVisible = !isPasswordVisible
             if (isPasswordVisible) {
@@ -48,25 +105,15 @@ class SignupActivity : AppCompatActivity() {
             passwordField.setSelection(passwordField.text.length)
         }
 
-        toggleConfirmPasswordVisibility.setOnClickListener {
-            isConfirmPasswordVisible = !isConfirmPasswordVisible
-            if (isConfirmPasswordVisible) {
-                confirmPasswordField.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
-                toggleConfirmPasswordVisibility.setImageResource(R.drawable.ic_eye_on)
-            } else {
-                confirmPasswordField.inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
-                toggleConfirmPasswordVisibility.setImageResource(R.drawable.ic_eye_off)
-            }
-            confirmPasswordField.setSelection(confirmPasswordField.text.length)
-        }
-
-        createAccountButton.setOnClickListener {
+        // Register Button
+        registerButton.setOnClickListener {
+            val firstName = firstNameField.text.toString().trim()
+            val lastName = lastNameField.text.toString().trim()
             val email = emailField.text.toString().trim()
             val password = passwordField.text.toString().trim()
-            val confirmPassword = confirmPasswordField.text.toString().trim()
 
             // Validation
-            if (email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -81,27 +128,97 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (password != confirmPassword) {
-                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // Show pre-signup guidance about email verification
-            showEmailGuidanceDialog(email, password)
+            showEmailGuidanceDialog(firstName, lastName, email, password)
         }
 
-        loginRedirect.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+        // Google Sign In with One Tap
+        googleButton.setOnClickListener {
+            signInWithGoogle()
+        }
+
+        // Facebook button - Coming Soon
+        facebookButton.setOnClickListener {
+            Toast.makeText(this, "Facebook login coming soon!", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun showEmailGuidanceDialog(email: String, password: String) {
+    private fun signInWithGoogle() {
+        oneTapClient.beginSignIn(signInRequest)
+            .addOnSuccessListener(this) { result ->
+                try {
+                    val intentSenderRequest = IntentSenderRequest.Builder(result.pendingIntent.intentSender).build()
+                    oneTapSignInLauncher.launch(intentSenderRequest)
+                } catch (e: IntentSender.SendIntentException) {
+                    Log.e("SignupAuth", "Couldn't start One Tap UI: ${e.localizedMessage}")
+                    Toast.makeText(this, "Google Sign-In failed to start", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .addOnFailureListener(this) { e ->
+                Log.d("SignupAuth", "No Google accounts found: ${e.localizedMessage}")
+                Toast.makeText(this, "No Google accounts found. Please try again.", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    Log.d("SignupAuth", "signInWithCredential:success")
+                    val user = auth.currentUser
+                    if (user != null) {
+                        val isNewUser = task.result?.additionalUserInfo?.isNewUser ?: false
+
+                        val nameParts = user.displayName?.split(" ") ?: listOf("", "")
+                        val firstName = nameParts.firstOrNull() ?: ""
+                        val lastName = nameParts.drop(1).joinToString(" ")
+
+                        val userProfile = User(
+                            id = user.uid,
+                            firstName = firstName,
+                            lastName = lastName,
+                            email = user.email ?: "",
+                            dateOfBirth = "",
+                            createdAt = System.currentTimeMillis()
+                        )
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val result = firestoreRepository.createUserProfile(userProfile)
+                            withContext(Dispatchers.Main) {
+                                if (result.isSuccess) {
+                                    Log.d("SignupAuth", "User profile created/updated in Firestore")
+                                } else {
+                                    Log.e("SignupAuth", "Failed to create profile: ${result.exceptionOrNull()?.message}")
+                                }
+                                proceedToApp(isNewUser)
+                            }
+                        }
+                    }
+                } else {
+                    Log.w("SignupAuth", "signInWithCredential:failure", task.exception)
+                    Toast.makeText(
+                        this,
+                        "Authentication failed: ${task.exception?.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+    }
+
+    private fun proceedToApp(isNewUser: Boolean) {
+        AuthHelper.markUserLoggedIn(this)
+        val message = if (isNewUser) "Account created successfully!" else "Welcome back!"
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        startActivity(Intent(this, DashboardActivity::class.java))
+        finish()
+    }
+
+    private fun showEmailGuidanceDialog(firstName: String, lastName: String, email: String, password: String) {
         AlertDialog.Builder(this)
             .setTitle("Email Verification Required")
             .setMessage(
                 """Before creating your account, please note:
-
+                
 • A verification email will be sent to: $email
 • Check your SPAM/Junk folder if not in inbox
 • Gmail users: Also check Promotions tab
@@ -110,32 +227,49 @@ class SignupActivity : AppCompatActivity() {
 The verification email may take 2-5 minutes to arrive."""
             )
             .setPositiveButton("Continue & Create Account") { _, _ ->
-                proceedWithAccountCreation(email, password)
+                proceedWithAccountCreation(firstName, lastName, email, password)
             }
             .setNegativeButton("Cancel", null)
             .show()
     }
 
-    private fun proceedWithAccountCreation(email: String, password: String) {
-        // Disable button to prevent multiple clicks
-        findViewById<LinearLayout>(R.id.button_create_account).apply {
+    private fun proceedWithAccountCreation(firstName: String, lastName: String, email: String, password: String) {
+        findViewById<TextView>(R.id.button_register).apply {
             isEnabled = false
             isClickable = false
             alpha = 0.6f
         }
 
-        createAccountWithEmail(email, password)
+        createAccountWithEmail(firstName, lastName, email, password)
     }
 
-    private fun createAccountWithEmail(email: String, password: String) {
+    private fun createAccountWithEmail(firstName: String, lastName: String, email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     Log.d("SignupAuth", "createUserWithEmail:success")
-                    val user = auth.currentUser
+                    val firebaseUser = auth.currentUser
+                    if (firebaseUser != null) {
+                        val user = User(
+                            id = firebaseUser.uid,
+                            firstName = firstName,
+                            lastName = lastName,
+                            email = email,
+                            dateOfBirth = "",
+                            createdAt = System.currentTimeMillis()
+                        )
 
-                    if (user != null) {
-                        sendVerificationEmail(user, email)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val result = firestoreRepository.createUserProfile(user)
+                            withContext(Dispatchers.Main) {
+                                if (result.isSuccess) {
+                                    Log.d("SignupAuth", "User profile saved to Firestore")
+                                } else {
+                                    Log.e("SignupAuth", "Failed to save user profile: ${result.exceptionOrNull()?.message}")
+                                }
+                                sendVerificationEmail(firebaseUser, email)
+                            }
+                        }
                     } else {
                         showError("Account creation failed. Please try again.")
                     }
@@ -152,6 +286,7 @@ The verification email may take 2-5 minutes to arrive."""
                             "Network error. Please check your internet connection."
                         else -> "Registration failed: ${task.exception?.message}"
                     }
+
                     showError(errorMessage)
                 }
             }
@@ -162,21 +297,14 @@ The verification email may take 2-5 minutes to arrive."""
             .addOnCompleteListener { emailTask ->
                 if (emailTask.isSuccessful) {
                     Log.d("SignupAuth", "Email verification sent successfully")
-
-                    // Show success dialog with detailed instructions
                     showEmailSentDialog(email)
-
-                    // Sign out user until they verify their email
                     auth.signOut()
-
                 } else {
                     Log.w("SignupAuth", "sendEmailVerification failed", emailTask.exception)
-
                     AlertDialog.Builder(this)
                         .setTitle("Account Created")
                         .setMessage("Your account was created but the verification email failed to send. You can try resending it from the login screen.")
                         .setPositiveButton("Go to Login") { _, _ ->
-                            startActivity(Intent(this, LoginActivity::class.java))
                             finish()
                         }
                         .setCancelable(false)
@@ -194,7 +322,7 @@ $email
 
 WHERE TO LOOK:
 • Check your Inbox first
-• Then check SPAM/Junk folder  
+• Then check SPAM/Junk folder
 • Gmail: Check Promotions tab or Spam Folder
 • Outlook: Check Junk folder
 • Yahoo: Check Spam folder
@@ -203,10 +331,9 @@ TIMING:
 Email may take 2-5 minutes to arrive
 
 SENDER:
-From: support@freshtrack-d3269.firebaseapp.com """
+From: support@freshtrack-d3269.firebaseapp.com"""
             )
             .setPositiveButton("Got It!") { _, _ ->
-                startActivity(Intent(this, LoginActivity::class.java))
                 finish()
             }
             .setCancelable(false)
@@ -215,9 +342,7 @@ From: support@freshtrack-d3269.firebaseapp.com """
 
     private fun showError(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-
-        // Re-enable button
-        findViewById<LinearLayout>(R.id.button_create_account).apply {
+        findViewById<TextView>(R.id.button_register).apply {
             isEnabled = true
             isClickable = true
             alpha = 1f
