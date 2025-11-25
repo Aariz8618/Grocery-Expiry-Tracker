@@ -1,11 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
-    tools:context=".DashboardActivity">
+    android:background="#F5F5F5">
 
     <!--  Header Section  -->
     <LinearLayout
@@ -228,133 +228,13 @@
         app:maxImageSize="30dp"
         app:tint="@android:color/white" />
 
-    <!--  Ad View (above bottom nav)  -->
+    <!--  Ad View  -->
     <com.google.android.gms.ads.AdView
         ads:adSize="BANNER"
         ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
         android:id="@+id/adView"
-        android:layout_above="@+id/bottom_nav"
+        android:layout_alignParentBottom="true"
         android:layout_height="50dp"
         android:layout_width="match_parent" />
 
-    <!--  Bottom Navigation  -->
-    <LinearLayout
-        android:background="@android:color/white"
-        android:elevation="8dp"
-        android:id="@+id/bottom_nav"
-        android:layout_alignParentBottom="true"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:orientation="horizontal"
-        android:paddingTop="6dp">
-        <!--  Home Tab  -->
-        <LinearLayout
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:id="@+id/tab_home"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <ImageView
-                android:layout_height="24dp"
-                android:layout_width="24dp"
-                android:src="@drawable/ic_home"
-                app:tint="#48BB78" />
-
-            <TextView
-                android:fontFamily="sans-serif-medium"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_width="wrap_content"
-                android:text="Home"
-                android:textColor="#48BB78"
-                android:textSize="12sp" />
-        </LinearLayout>
-        <!--  Stats Tab  -->
-        <LinearLayout
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:id="@+id/tab_stats"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <ImageView
-                android:layout_height="24dp"
-                android:layout_width="24dp"
-                android:src="@drawable/stats"
-                app:tint="#9CA3AF" />
-
-            <TextView
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_width="wrap_content"
-                android:text="Stats"
-                android:textColor="#9CA3AF"
-                android:textSize="12sp" />
-        </LinearLayout>
-        <!--  Recipes Tab  -->
-        <LinearLayout
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:id="@+id/tab_recipes"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <ImageView
-                android:layout_height="24dp"
-                android:layout_width="24dp"
-                android:src="@drawable/recipe"
-                app:tint="#9CA3AF" />
-
-            <TextView
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_width="wrap_content"
-                android:text="Recipes"
-                android:textColor="#9CA3AF"
-                android:textSize="12sp" />
-        </LinearLayout>
-        <!--  Settings Tab  -->
-        <LinearLayout
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:id="@+id/tab_settings"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:orientation="vertical"
-            android:padding="8dp">
-
-            <ImageView
-                android:layout_height="24dp"
-                android:layout_width="24dp"
-                android:src="@drawable/settings"
-                app:tint="#9CA3AF" />
-
-            <TextView
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_width="wrap_content"
-                android:text="Settings"
-                android:textColor="#9CA3AF"
-                android:textSize="12sp" />
-        </LinearLayout>
-    </LinearLayout>
 </RelativeLayout>

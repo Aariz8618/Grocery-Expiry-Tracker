@@ -36,4 +36,33 @@
         <item name="android:layout_height">51dp</item>
         <item name="android:background">@drawable/bg_grid_square</item>
     </style>
+
+    <style name="BottomNavTabStyle">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+        <!-- Use the standard selectable background for ripple effect -->
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+    <!-- Style for the Icons (ImageView) -->
+    <style name="BottomNavIconStyle">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+    </style>
+
+    <!-- Style for the Text Labels (TextView) -->
+    <style name="BottomNavTextStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:layout_marginTop">4dp</item>
+    </style>
 </resources>

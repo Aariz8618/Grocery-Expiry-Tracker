@@ -49,16 +49,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.ExpiryTracker" />
         <activity
-            android:name=".SettingsActivity"
-            android:exported="false" />
-        <activity
             android:name=".RecipeDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RecipesActivity"
-            android:exported="false" />
-        <activity
-            android:name=".StatisticsActivity"
             android:exported="false" />
         <activity
             android:name=".FilteredItemsActivity"
@@ -80,7 +71,13 @@
             android:exported="false" />
         <activity
             android:name=".DashboardActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".LoginActivity"
             android:exported="false" />

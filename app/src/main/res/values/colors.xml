@@ -73,4 +73,5 @@
     <color name="status_warning">#FFFF9800</color>
     <color name="status_error">#FFF44336</color>
     <color name="status_info">#FF2196F3</color>
+    <color name="inactive_icon">#9CA3AF</color>
 </resources>

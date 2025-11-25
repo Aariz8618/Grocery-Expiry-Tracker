@@ -6,8 +6,8 @@ import android.os.Bundle
 import android.text.InputType
 import android.util.Log
 import android.widget.EditText
-import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.IntentSenderRequest
@@ -83,8 +83,7 @@ class SignupActivity : AppCompatActivity() {
         val passwordField = findViewById<EditText>(R.id.input_password)
         val registerButton = findViewById<TextView>(R.id.button_register)
         val togglePasswordVisibility = findViewById<ImageView>(R.id.toggle_password_visibility)
-        val googleButton = findViewById<FrameLayout>(R.id.button_google)
-        val facebookButton = findViewById<FrameLayout>(R.id.button_facebook)
+        val googleButton = findViewById<LinearLayout>(R.id.button_google)
         val signinLink = findViewById<TextView>(R.id.text_signin)
 
         // Navigation to Sign In
@@ -134,11 +133,6 @@ class SignupActivity : AppCompatActivity() {
         // Google Sign In with One Tap
         googleButton.setOnClickListener {
             signInWithGoogle()
-        }
-
-        // Facebook button - Coming Soon
-        facebookButton.setOnClickListener {
-            Toast.makeText(this, "Facebook login coming soon!", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -1,15 +1,10 @@
 package com.aariz.expirytracker
 
-import android.animation.AnimatorSet
-import android.animation.ObjectAnimator
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.View
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 
@@ -72,7 +67,6 @@ class SplashScreenActivity : AppCompatActivity() {
             Log.d("SplashScreenActivity", "No authenticated user found - going to login")
             startActivity(Intent(this, LoginActivity::class.java))
         }
-
         finish()
     }
 

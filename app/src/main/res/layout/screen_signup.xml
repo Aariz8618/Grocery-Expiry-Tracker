@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    android:scrollbars="none"
     android:background="@color/white">
 
     <LinearLayout
@@ -31,7 +32,7 @@
         <TextView
             android:layout_width="345dp"
             android:layout_height="wrap_content"
-            android:text="It was popularised in the 1960s with the release of Letraset sheetscontaining Lorem Ipsum."
+            android:text="Smart expiry reminders start here."
             android:textColor="#61677D"
             android:textSize="14sp"
             android:lineSpacingExtra="8sp"
@@ -39,83 +40,6 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="32dp"
             android:fontFamily="sans-serif" />
-
-        <!-- Social Sign In Buttons -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="24dp"
-            android:gravity="center">
-
-            <!-- Facebook Button -->
-            <FrameLayout
-                android:id="@+id/button_facebook"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_social_button_signup"
-                android:layout_marginEnd="8dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_google"
-                    android:contentDescription="Facebook" />
-            </FrameLayout>
-
-            <!-- Google Button -->
-            <FrameLayout
-                android:id="@+id/button_google"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_social_button_signup"
-                android:layout_marginStart="8dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_google"
-                    android:contentDescription="Google" />
-            </FrameLayout>
-        </LinearLayout>
-
-        <!-- Divider with OR text -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="24dp">
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="#E0E0E0" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="OR"
-                android:textColor="#61677D"
-                android:textSize="12sp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="#E0E0E0" />
-        </LinearLayout>
 
         <!-- First Name Input -->
         <TextView
@@ -252,6 +176,65 @@
             android:clickable="true"
             android:focusable="true"
             android:fontFamily="sans-serif-medium" />
+
+        <!-- Divider with OR text -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#E0E0E0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OR"
+                android:textColor="#61677D"
+                android:textSize="12sp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1"
+                android:background="#E0E0E0" />
+        </LinearLayout>
+
+        <!-- Google Sign In Button -->
+        <LinearLayout
+            android:id="@+id/button_google"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_social_button_signup"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_google"
+                android:contentDescription="Google"
+                android:layout_marginEnd="12dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Continue with Google"
+                android:textColor="#2E7D32"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium" />
+        </LinearLayout>
 
         <!-- Sign In Link -->
         <LinearLayout

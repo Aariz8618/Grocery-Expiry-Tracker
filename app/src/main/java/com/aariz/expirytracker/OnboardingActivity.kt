@@ -3,17 +3,18 @@ package com.aariz.expirytracker
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.cardview.widget.CardView
 import androidx.viewpager2.widget.ViewPager2
+import android.widget.TextView
 import com.aariz.expirytracker.adapters.OnboardingAdapter
 import com.aariz.expirytracker.models.OnboardingItem
 
 class OnboardingActivity : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager2
-    private lateinit var btnNext: TextView
+    private lateinit var btnNext: CardView  // Changed from TextView to CardView
+    private lateinit var btnNextText: TextView  // Add this for the text inside CardView
     private lateinit var btnSkip: TextView
     private lateinit var dot1: View
     private lateinit var dot2: View
@@ -21,26 +22,25 @@ class OnboardingActivity : AppCompatActivity() {
 
     private val onboardingItems = listOf(
         OnboardingItem(
-            image = R.drawable.ic_onboarding_track,
-            title = "Track Your Groceries",
-            description = "Never let your food go to waste. Track expiry dates and get timely reminders for all your grocery items."
+            image = R.drawable.mascot_waving,
+            title = "Welcome to FreshTrack!",
+            description = "Your friendly companion for keeping food fresh."
         ),
         OnboardingItem(
-            image = R.drawable.ic_onboarding_reminder,
-            title = "Smart Reminders",
-            description = "Get notified before your items expire. Set custom reminders and never miss a deadline again."
+            image = R.drawable.mascot_apple,
+            title = "Log Your Groceries in Seconds",
+            description = "Add items effortlessly — your kitchen stays organized."
         ),
         OnboardingItem(
-            image = R.drawable.ic_onboarding_save,
-            title = "Save Money & Food",
-            description = "Reduce food waste and save money by using items before they expire. Make your groceries last longer."
+            image = R.drawable.mascot_clock,
+            title = "Never Miss an Expiry Date",
+            description = "Get timely alerts before your food goes bad."
         )
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding)
-
         initViews()
         setupViewPager()
         setupClickListeners()
@@ -49,6 +49,7 @@ class OnboardingActivity : AppCompatActivity() {
     private fun initViews() {
         viewPager = findViewById(R.id.viewpager_onboarding)
         btnNext = findViewById(R.id.button_next)
+        btnNextText = btnNext.findViewById<TextView>(android.R.id.text1) // Get TextView inside CardView
         btnSkip = findViewById(R.id.text_skip)
         dot1 = findViewById(R.id.dot_1)
         dot2 = findViewById(R.id.dot_2)
@@ -58,7 +59,6 @@ class OnboardingActivity : AppCompatActivity() {
     private fun setupViewPager() {
         val adapter = OnboardingAdapter(onboardingItems)
         viewPager.adapter = adapter
-
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
@@ -71,10 +71,8 @@ class OnboardingActivity : AppCompatActivity() {
     private fun setupClickListeners() {
         btnNext.setOnClickListener {
             if (viewPager.currentItem < onboardingItems.size - 1) {
-                // Go to next page
                 viewPager.currentItem += 1
             } else {
-                // Complete onboarding
                 finishOnboarding()
             }
         }
@@ -87,7 +85,6 @@ class OnboardingActivity : AppCompatActivity() {
     private fun updateDots(position: Int) {
         val activeDrawable = R.drawable.bg_dot_active
         val inactiveDrawable = R.drawable.bg_dot_inactive
-
         when (position) {
             0 -> {
                 dot1.setBackgroundResource(activeDrawable)
@@ -108,19 +105,18 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     private fun updateButton(position: Int) {
+        // Find the TextView inside the CardView
+        val textView = btnNext.findViewById<TextView>(R.id.button_next_text)
         if (position == onboardingItems.size - 1) {
-            btnNext.text = "Get Started"
+            textView?.text = "Get Started"
         } else {
-            btnNext.text = "Next"
+            textView?.text = "Next"
         }
     }
 
     private fun finishOnboarding() {
-        // Save onboarding completion status
         val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
         sharedPreferences.edit().putBoolean("onboarding_completed", true).apply()
-
-        // Navigate to Login/Signup Activity
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()

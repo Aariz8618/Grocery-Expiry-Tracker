@@ -3,35 +3,38 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="24dp">
 
-    <!-- Illustration Container -->
+    <!-- Mascot Container with Circular Background -->
     <FrameLayout
-        android:id="@+id/illustration_container"
-        android:layout_width="280dp"
-        android:layout_height="280dp"
+        android:id="@+id/mascot_container"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:layout_marginTop="60dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/onboarding_title"
-        app:layout_constraintVertical_bias="0.3">
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Background Circle -->
+        <!-- Circular Background -->
         <View
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_onboarding_circle" />
+            android:background="@drawable/bg_onboarding_circle"
+            android:elevation="2dp"/>
 
-        <!-- Icon/Illustration -->
+        <!-- Mascot Image -->
         <ImageView
             android:id="@+id/onboarding_image"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
             android:layout_gravity="center"
-            android:contentDescription="Onboarding illustration" />
+            android:contentDescription="mascot_description"
+            android:elevation="4dp"
+            android:scaleType="centerInside"/>
     </FrameLayout>
 
-    <!-- Title -->
+    <!-- Heading Text -->
     <TextView
         android:id="@+id/onboarding_title"
         android:layout_width="0dp"
@@ -39,28 +42,28 @@
         android:textColor="#2E7D32"
         android:textSize="28sp"
         android:textStyle="bold"
-        android:textAlignment="center"
         android:fontFamily="sans-serif-medium"
-        android:layout_marginTop="40dp"
-        app:layout_constraintTop_toBottomOf="@+id/illustration_container"
+        android:gravity="center"
+        android:letterSpacing="0.01"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@+id/mascot_container"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingHorizontal="32dp"/>
 
-    <!-- Description -->
+    <!-- Subtitle Text -->
     <TextView
         android:id="@+id/onboarding_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="#61677D"
+        android:textColor="#4CAF50"
         android:textSize="16sp"
-        android:lineSpacingExtra="6sp"
-        android:textAlignment="center"
         android:fontFamily="sans-serif"
-        android:layout_marginTop="16dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
+        android:gravity="center"
+        android:layout_marginTop="12dp"
         app:layout_constraintTop_toBottomOf="@+id/onboarding_title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:paddingHorizontal="40dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

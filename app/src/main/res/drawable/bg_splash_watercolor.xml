@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <gradient
+        android:type="radial"
+        android:gradientRadius="90%"
+        android:centerX="50%"
+        android:centerY="50%"
+        android:startColor="#C8E6C9"
+        android:endColor="#E8F5E9"
+        android:useLevel="false"/>
+
+    <size
+        android:width="180dp"
+        android:height="180dp"/>
+
+    <!-- Optional soft shadow (premium feel) -->
+    <solid android:color="#C8E6C9"/>
+</shape>
