@@ -1,33 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="TabTextStyle" parent="TextAppearance.Design.Tab">
+
+    <!-- Tabs text style (Material3) -->
+    <style name="TabTextStyle" parent="TextAppearance.Material3.TitleSmall">
+        <!-- Slightly larger, bold, not all caps -->
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
         <item name="android:letterSpacing">0</item>
         <item name="android:fontFamily">sans-serif</item>
+        <!-- Color if you want a specific one; otherwise rely on TabLayout defaults -->
+        <item name="android:textColor">@color/text_primary</item>
     </style>
 
-    <!-- Custom Alert Dialog Style -->
+    <!-- Custom Alert Dialog Style (Material3 overlay) -->
     <style name="CustomAlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
-        <!-- Dialog background color -->
-        <item name="android:background">@drawable/dialog_background</item>
-        <item name="backgroundTint">@color/white</item>
+        <!-- Dialog container background (rounded card) -->
+        <item name="materialAlertDialogBodyTextStyle">@style/CustomAlertDialog.BodyText</item>
+        <item name="materialAlertDialogTitleTextStyle">@style/CustomAlertDialog.TitleText</item>
+        <item name="shapeAppearanceMediumComponent">@style/Shape.Corner.Medium</item>
 
-        <!-- Title text color -->
-        <item name="android:textColorPrimary">@color/green_primary</item>
-
-        <!-- Message and item text color -->
-        <item name="android:textColor">@color/gray_800</item>
-
-        <!-- Button colors -->
+        <!-- Surfaces and colors -->
+        <item name="colorSurface">@color/card_surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
         <item name="colorPrimary">@color/green_primary</item>
         <item name="colorOnPrimary">@android:color/white</item>
 
-        <!-- Checkbox colors -->
-        <item name="colorControlActivated">@color/green_primary</item>
-        <item name="colorControlNormal">@color/gray_400</item>
+        <!-- Optional: custom background drawable for extra control -->
+        <item name="android:windowBackground">@drawable/dialog_background</item>
+    </style>
 
+    <style name="CustomAlertDialog.TitleText" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/green_primary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="CustomAlertDialog.BodyText" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/gray_800</item>
     </style>
 
     <!-- Grid Square Style -->
@@ -37,13 +46,13 @@
         <item name="android:background">@drawable/bg_grid_square</item>
     </style>
 
+    <!-- Bottom navigation tab container -->
     <style name="BottomNavTabStyle">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_weight">1</item>
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">center</item>
-        <!-- Use the standard selectable background for ripple effect -->
         <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:clickable">true</item>
         <item name="android:focusable">true</item>
@@ -51,18 +60,29 @@
         <item name="android:paddingBottom">4dp</item>
     </style>
 
-    <!-- Style for the Icons (ImageView) -->
+    <!-- Bottom navigation icon -->
     <style name="BottomNavIconStyle">
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
+        <!-- Optional tint; comment if you tint per state -->
+        <!-- <item name="android:tint">@color/text_secondary</item> -->
     </style>
 
-    <!-- Style for the Text Labels (TextView) -->
+    <!-- Bottom navigation text -->
     <style name="BottomNavTextStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">12sp</item>
         <item name="android:fontFamily">sans-serif-medium</item>
         <item name="android:layout_marginTop">4dp</item>
+        <item name="android:textColor">@color/text_secondary</item>
     </style>
+
+    <!-- Rounded medium corner overlay used by dialogs/buttons -->
+    <style name="Shape.Corner.Medium" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">14dp</item>
+    </style>
+
+
 </resources>

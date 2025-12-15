@@ -156,4 +156,76 @@ class FirestoreRepository {
             Result.failure(e)
         }
     }
+
+    // Update item category
+    suspend fun updateItemCategory(itemId: String, newCategory: String): Result<Void?> {
+        return try {
+            val currentUser = auth.currentUser
+            if (currentUser == null) {
+                Log.e("FirestoreRepository", "User not authenticated")
+                return Result.failure(Exception("User not authenticated"))
+            }
+
+            firestore.collection("users")
+                .document(currentUser.uid)
+                .collection("grocery_items")
+                .document(itemId)
+                .update("category", newCategory)
+                .await()
+
+            Log.d("FirestoreRepository", "Item category updated successfully: $itemId")
+            Result.success(null)
+        } catch (e: Exception) {
+            Log.e("FirestoreRepository", "Error updating item category: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+
+    // Mark item as used
+    suspend fun markItemAsUsed(itemId: String): Result<Void?> {
+        return try {
+            val currentUser = auth.currentUser
+            if (currentUser == null) {
+                Log.e("FirestoreRepository", "User not authenticated")
+                return Result.failure(Exception("User not authenticated"))
+            }
+
+            firestore.collection("users")
+                .document(currentUser.uid)
+                .collection("grocery_items")
+                .document(itemId)
+                .update("status", "used")
+                .await()
+
+            Log.d("FirestoreRepository", "Item marked as used: $itemId")
+            Result.success(null)
+        } catch (e: Exception) {
+            Log.e("FirestoreRepository", "Error marking item as used: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
+
+    // Delete item
+    suspend fun deleteItem(itemId: String): Result<Void?> {
+        return try {
+            val currentUser = auth.currentUser
+            if (currentUser == null) {
+                Log.e("FirestoreRepository", "User not authenticated")
+                return Result.failure(Exception("User not authenticated"))
+            }
+
+            firestore.collection("users")
+                .document(currentUser.uid)
+                .collection("grocery_items")
+                .document(itemId)
+                .delete()
+                .await()
+
+            Log.d("FirestoreRepository", "Item deleted successfully: $itemId")
+            Result.success(null)
+        } catch (e: Exception) {
+            Log.e("FirestoreRepository", "Error deleting item: ${e.message}", e)
+            Result.failure(e)
+        }
+    }
 }

@@ -13,8 +13,8 @@ import com.aariz.expirytracker.models.OnboardingItem
 class OnboardingActivity : AppCompatActivity() {
 
     private lateinit var viewPager: ViewPager2
-    private lateinit var btnNext: CardView  // Changed from TextView to CardView
-    private lateinit var btnNextText: TextView  // Add this for the text inside CardView
+    private lateinit var btnNext: CardView
+
     private lateinit var btnSkip: TextView
     private lateinit var dot1: View
     private lateinit var dot2: View
@@ -49,7 +49,6 @@ class OnboardingActivity : AppCompatActivity() {
     private fun initViews() {
         viewPager = findViewById(R.id.viewpager_onboarding)
         btnNext = findViewById(R.id.button_next)
-        btnNextText = btnNext.findViewById<TextView>(android.R.id.text1) // Get TextView inside CardView
         btnSkip = findViewById(R.id.text_skip)
         dot1 = findViewById(R.id.dot_1)
         dot2 = findViewById(R.id.dot_2)

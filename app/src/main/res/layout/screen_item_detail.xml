@@ -539,7 +539,7 @@
                         <ImageView
                             android:layout_width="22dp"
                             android:layout_height="22dp"
-                            android:src="@drawable/edit"
+                            android:src="@drawable/ic_edit"
                             android:layout_marginEnd="10dp"
                             app:tint="@color/green_primary" />
 

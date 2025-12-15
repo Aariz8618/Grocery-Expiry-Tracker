@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_grocery_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp"
+    app:cardBackgroundColor="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Top Border Status Indicator -->
+        <View
+            android:id="@+id/status_border_top"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:background="#10B981" />
+
+        <!-- Top Section with Icon and Status wrapped in FrameLayout -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Background and Content -->
+            <LinearLayout
+                android:id="@+id/top_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/top_section_bg_green"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp">
+
+                <ImageView
+                    android:id="@+id/iv_item_image"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="8dp"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
+                <!-- Item Emoji/Icon -->
+                <TextView
+                    android:id="@+id/tv_item_emoji"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🥕"
+                    android:textSize="64sp"
+                    android:layout_marginTop="8dp" />
+
+                <!-- Expiry Status Badge -->
+                <LinearLayout
+                    android:id="@+id/tv_expiry_status_badge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/status_badge_grid_green"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:id="@+id/status_dot"
+                        android:layout_width="8dp"
+                        android:layout_height="8dp"
+                        android:background="@drawable/status_dot_green" />
+
+                    <TextView
+                        android:id="@+id/tv_expiry_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:text="5 days left"
+                        android:textColor="#047857"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Action Buttons Overlay (on top) -->
+            <LinearLayout
+                android:id="@+id/action_buttons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_margin="8dp"
+                android:orientation="horizontal"
+                android:elevation="4dp">
+
+                <!-- Consume/Check Button -->
+                <FrameLayout
+                    android:id="@+id/btn_consume"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:background="@drawable/button_consume_small_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                    <ImageView
+                        android:id="@+id/iv_check_icon"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_check"
+                        app:tint="#6B7280" />
+                </FrameLayout>
+
+                <!-- More Options Button -->
+                <FrameLayout
+                    android:id="@+id/btn_more_options"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/button_more_small_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackgroundBorderless">
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_more"
+                        app:tint="#6B7280" />
+                </FrameLayout>
+            </LinearLayout>
+        </FrameLayout>
+
+        <!-- Bottom Section with Details -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center"
+            android:background="@color/white">
+
+            <!-- Item Name -->
+            <TextView
+                android:id="@+id/tv_item_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Fresh Carrots"
+                android:textColor="#1F2937"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <!-- Quantity -->
+            <TextView
+                android:id="@+id/tv_quantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="500g"
+                android:textColor="#374151"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <!-- Location Badge -->
+            <TextView
+                android:id="@+id/tv_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Fridge"
+                android:textColor="#1D4ED8"
+                android:textSize="12sp"
+                android:background="@drawable/location_badge_blue"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

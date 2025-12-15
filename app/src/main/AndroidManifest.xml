@@ -66,16 +66,15 @@
             android:exported="false"
             android:label="Edit Item"
             android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".AddItemActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".DashboardActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity

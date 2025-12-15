@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.github.mikephil.charting.charts.BarChart
@@ -23,6 +25,20 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+
+// Data class for monthly trends
+data class MonthData(
+    val month: String,
+    val used: Int,
+    val expired: Int
+)
+
+// Data class for category statistics
+data class CategoryStats(
+    val total: Int,
+    val used: Int,
+    val expired: Int
+)
 
 class StatisticsFragment : Fragment() {
 
@@ -40,6 +56,13 @@ class StatisticsFragment : Fragment() {
     private lateinit var tvWasteSaved: TextView
     private lateinit var pieChart: PieChart
     private lateinit var barChart: BarChart
+
+    // Cache date formatter for better performance
+    private val dateFormatter by lazy {
+        SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).apply {
+            isLenient = false
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,14 +120,25 @@ class StatisticsFragment : Fragment() {
         startActivity(intent)
     }
 
+    private fun showLoading(isLoading: Boolean) {
+        // Toggle visibility of progress indicator if you have one
+        // view?.findViewById<ProgressBar>(R.id.progress_bar)?.isVisible = isLoading
+    }
+
     private fun loadStatistics() {
+        showLoading(true)
         lifecycleScope.launch {
             try {
                 val result = firestoreRepository.getUserGroceryItems()
 
                 if (result.isSuccess) {
                     val items = result.getOrNull() ?: emptyList()
-                    calculateAndDisplayStatistics(items)
+
+                    if (items.isEmpty()) {
+                        showEmptyState()
+                    } else {
+                        calculateAndDisplayStatistics(items)
+                    }
                 } else {
                     Toast.makeText(
                         requireContext(),
@@ -118,8 +152,29 @@ class StatisticsFragment : Fragment() {
                     "Error loading statistics: ${e.message}",
                     Toast.LENGTH_LONG
                 ).show()
+            } finally {
+                showLoading(false)
             }
         }
+    }
+
+    private fun showEmptyState() {
+        tvItemsUsed.text = "0"
+        tvItemsExpired.text = "0"
+        tvLegendUsed.text = "Used (0)"
+        tvLegendExpired.text = "Expired (0)"
+        tvLegendFresh.text = "Fresh (0)"
+        tvMonthSummary.text = "Start tracking items to see your statistics!"
+        tvEfficiencyRate.text = "0%"
+        tvTotalItems.text = "0"
+        tvWasteSaved.text = "0"
+
+        // Setup empty pie chart
+        setupPieChart(0, 0, 0)
+
+        // Clear bar chart
+        barChart.clear()
+        barChart.invalidate()
     }
 
     private fun calculateAndDisplayStatistics(items: List<GroceryItem>) {
@@ -146,6 +201,7 @@ class StatisticsFragment : Fragment() {
         val monthUsedCount = thisMonthItems.count { it.status == "used" }
         val monthExpiredCount = thisMonthItems.count { it.status == "expired" }
 
+        // Calculate efficiency rate (used items / total non-fresh items)
         val nonFreshItems = usedCount + expiredCount
         val efficiencyRate = if (nonFreshItems > 0) {
             (usedCount.toFloat() / nonFreshItems.toFloat() * 100).toInt()
@@ -153,7 +209,22 @@ class StatisticsFragment : Fragment() {
             0
         }
 
+        // Items saved = items used before expiry
         val itemsSaved = usedCount
+
+        // Calculate monetary values
+        val totalValue = itemsWithUpdatedStatus.sumOf {
+            it.price.toDoubleOrNull() ?: 0.0
+        }
+
+        val wastedValue = itemsWithUpdatedStatus
+            .filter { it.status == "expired" }
+            .sumOf { it.price.toDoubleOrNull() ?: 0.0 }
+
+        val savedValue = itemsWithUpdatedStatus
+            .filter { it.status == "used" }
+            .sumOf { it.price.toDoubleOrNull() ?: 0.0 }
+
         val monthlyTrends = calculateMonthlyTrends(itemsWithUpdatedStatus)
 
         updateUI(
@@ -164,7 +235,8 @@ class StatisticsFragment : Fragment() {
             monthUsedCount = monthUsedCount,
             monthExpiredCount = monthExpiredCount,
             efficiencyRate = efficiencyRate,
-            itemsSaved = itemsSaved
+            itemsSaved = itemsSaved,
+            savedValue = savedValue
         )
 
         setupPieChart(usedCount, expiredCount, freshCount)
@@ -244,6 +316,12 @@ class StatisticsFragment : Fragment() {
     }
 
     private fun setupBarChart(monthlyData: List<MonthData>) {
+        if (monthlyData.isEmpty()) {
+            barChart.clear()
+            barChart.invalidate()
+            return
+        }
+
         val usedEntries = ArrayList<BarEntry>()
         val expiredEntries = ArrayList<BarEntry>()
         val labels = ArrayList<String>()
@@ -319,7 +397,8 @@ class StatisticsFragment : Fragment() {
         monthUsedCount: Int,
         monthExpiredCount: Int,
         efficiencyRate: Int,
-        itemsSaved: Int
+        itemsSaved: Int,
+        savedValue: Double = 0.0
     ) {
         tvItemsUsed.text = usedCount.toString()
         tvItemsExpired.text = expiredCount.toString()
@@ -327,16 +406,23 @@ class StatisticsFragment : Fragment() {
         tvLegendExpired.text = "Expired ($expiredCount)"
         tvLegendFresh.text = "Fresh ($freshCount)"
         tvMonthSummary.text = "This month: $monthUsedCount items used, $monthExpiredCount expired."
-        tvEfficiencyRate.text = "$efficiencyRate%"
+
+        // Enhanced efficiency rate with visual feedback
+        val efficiencyText = when {
+            efficiencyRate >= 80 -> "$efficiencyRate% 🌟"
+            efficiencyRate >= 60 -> "$efficiencyRate% 👍"
+            efficiencyRate >= 40 -> "$efficiencyRate% ⚠️"
+            else -> "$efficiencyRate%"
+        }
+        tvEfficiencyRate.text = efficiencyText
+
         tvTotalItems.text = totalItems.toString()
         tvWasteSaved.text = itemsSaved.toString()
     }
 
     private fun calculateDaysLeft(expiryDate: String): Int {
         return try {
-            val sdf = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-            sdf.isLenient = false
-            val expiry = sdf.parse(expiryDate) ?: return 0
+            val expiry = dateFormatter.parse(expiryDate) ?: return 0
 
             val expiryCalendar = Calendar.getInstance().apply {
                 time = expiry
@@ -361,11 +447,12 @@ class StatisticsFragment : Fragment() {
     }
 
     private fun determineStatus(daysLeft: Int, currentStatus: String): String {
+        // Preserve "used" status
         if (currentStatus == "used") return "used"
+
         return when {
             daysLeft < 0 -> "expired"
-            daysLeft == 0 -> "expiring"
-            daysLeft <= 3 -> "expiring"
+            daysLeft <= 3 -> "expiring"  // Covers 0-3 days (simplified)
             else -> "fresh"
         }
     }
@@ -400,8 +487,18 @@ class StatisticsFragment : Fragment() {
                         it.status == "fresh" || it.status == "expiring"
                     }
 
+                    // Calculate monetary values
+                    val savedValue = itemsWithUpdatedStatus
+                        .filter { it.status == "used" }
+                        .sumOf { it.price.toDoubleOrNull() ?: 0.0 }
+
+                    val wastedValue = itemsWithUpdatedStatus
+                        .filter { it.status == "expired" }
+                        .sumOf { it.price.toDoubleOrNull() ?: 0.0 }
+
                     val shareText = buildString {
                         appendLine("📊 My Food Tracking Stats")
+                        appendLine("Generated on ${SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(Date())}")
                         appendLine()
                         appendLine("🍽️ Total Items: ${itemsWithUpdatedStatus.size}")
                         appendLine("✅ Items Used: $usedCount")
@@ -413,6 +510,14 @@ class StatisticsFragment : Fragment() {
                         if (nonFreshItems > 0) {
                             val efficiency = (usedCount.toFloat() / nonFreshItems.toFloat() * 100).toInt()
                             appendLine("⚡ Efficiency Rate: $efficiency%")
+                        }
+
+                        if (savedValue > 0) {
+                            appendLine("💰 Value Saved: $${String.format("%.2f", savedValue)}")
+                        }
+
+                        if (wastedValue > 0) {
+                            appendLine("⚠️ Value Wasted: $${String.format("%.2f", wastedValue)}")
                         }
 
                         appendLine()
@@ -434,5 +539,17 @@ class StatisticsFragment : Fragment() {
                 Toast.makeText(requireContext(), "Error exporting: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    // Optional: Calculate category-wise statistics
+    private fun calculateCategoryStats(items: List<GroceryItem>): Map<String, CategoryStats> {
+        return items.groupBy { it.category }
+            .mapValues { (_, categoryItems) ->
+                CategoryStats(
+                    total = categoryItems.size,
+                    used = categoryItems.count { it.status == "used" },
+                    expired = categoryItems.count { it.status == "expired" }
+                )
+            }
     }
 }

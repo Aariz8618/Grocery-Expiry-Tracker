@@ -85,22 +85,26 @@ class FilteredItemsActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        adapter = GroceryAdapter(groceryItems) { item ->
-            val intent = Intent(this, ItemDetailActivity::class.java).apply {
-                putExtra("id", item.id)
-                putExtra("name", item.name)
-                putExtra("category", item.category)
-                putExtra("expiryDate", item.expiryDate)
-                putExtra("purchaseDate", item.purchaseDate)
-                putExtra("quantity", item.quantity)
-                putExtra("status", item.status)
-                putExtra("daysLeft", item.daysLeft)
-                putExtra("barcode", item.barcode)
-                putExtra("imageUrl", item.imageUrl)
-                putExtra("isGS1", item.isGS1)
-            }
-            startActivity(intent)
-        }
+        adapter = GroceryAdapter(
+            items = groceryItems,
+            onItemClick = { item ->
+                val intent = Intent(this, ItemDetailActivity::class.java).apply {
+                    putExtra("id", item.id)
+                    putExtra("name", item.name)
+                    putExtra("category", item.category)
+                    putExtra("expiryDate", item.expiryDate)
+                    putExtra("purchaseDate", item.purchaseDate)
+                    putExtra("quantity", item.quantity)
+                    putExtra("status", item.status)
+                    putExtra("daysLeft", item.daysLeft)
+                    putExtra("barcode", item.barcode)
+                    putExtra("imageUrl", item.imageUrl)
+                    putExtra("isGS1", item.isGS1)
+                }
+                startActivity(intent)
+            },
+            isGridView = false  // Optional, defaults to false
+        )
 
         recyclerView.adapter = adapter
     }

@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import com.google.firebase.auth.FirebaseAuth
 
 class SplashScreenActivity : AppCompatActivity() {
@@ -15,7 +16,13 @@ class SplashScreenActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         setContentView(R.layout.screen_splash)
+
+        val rootLayout = findViewById<android.view.View>(R.id.splash_root_layout)
+        rootLayout.applySystemBarInsets(top = true, bottom = true)
 
         auth = FirebaseAuth.getInstance()
 

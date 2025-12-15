@@ -1,7 +1,16 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Same style name; night-specific overrides only -->
     <style name="Base.Theme.ExpiryTracker" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <!-- Night-specific customizations -->
+        <!-- Example: <item name="colorPrimary">@color/hover_green</item> -->
     </style>
+
+    <style name="Theme.ExpiryTracker" parent="Base.Theme.ExpiryTracker" />
+    <style name="Theme.ExpiryTracker.FullScreen" parent="Theme.ExpiryTracker">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
 </resources>

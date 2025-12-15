@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -35,7 +36,9 @@ import java.util.concurrent.TimeUnit
 class HomeFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: GroceryAdapter
+    private lateinit var recyclerViewGrid: RecyclerView
+    private lateinit var listAdapter: GroceryAdapter
+    private lateinit var gridAdapter: GroceryAdapter
     private lateinit var emptyState: LinearLayout
     private lateinit var tvEmptyMessage: TextView
     private lateinit var greetingText: TextView
@@ -43,6 +46,10 @@ class HomeFragment : Fragment() {
     private lateinit var loadingIndicator: LinearLayout
     private lateinit var headerSection: LinearLayout
     private lateinit var adView: AdView
+
+    // View toggle buttons
+    private lateinit var btnListView: ImageView
+    private lateinit var btnGridView: ImageView
 
     // Filter buttons
     private lateinit var btnAll: MaterialButton
@@ -54,6 +61,7 @@ class HomeFragment : Fragment() {
     private val allGroceryItems = mutableListOf<GroceryItem>()
     private val filteredGroceryItems = mutableListOf<GroceryItem>()
     private var currentFilter = "all"
+    private var isGridView = false
 
     private lateinit var firestoreRepository: FirestoreRepository
     private lateinit var firestore: FirebaseFirestore
@@ -130,7 +138,8 @@ class HomeFragment : Fragment() {
         initViews(view)
         setupWindowInsets()
         setupAdView()
-        setupRecyclerView()
+        setupRecyclerViews()
+        setupViewToggle()
         setupFilterButtons()
         setupFab()
         setupProfileButton()
@@ -160,6 +169,7 @@ class HomeFragment : Fragment() {
 
     private fun initViews(view: View) {
         recyclerView = view.findViewById(R.id.recycler_items)
+        recyclerViewGrid = view.findViewById(R.id.recycler_items_grid)
         emptyState = view.findViewById(R.id.empty_state)
         tvEmptyMessage = view.findViewById(R.id.tv_empty_message)
         greetingText = view.findViewById(R.id.tv_greeting)
@@ -167,6 +177,10 @@ class HomeFragment : Fragment() {
         loadingIndicator = view.findViewById(R.id.loading_indicator)
         headerSection = view.findViewById(R.id.header_section)
         adView = view.findViewById(R.id.adView)
+
+        // Initialize view toggle buttons
+        btnListView = view.findViewById(R.id.btn_list_view)
+        btnGridView = view.findViewById(R.id.btn_grid_view)
 
         // Initialize filter buttons
         btnAll = view.findViewById(R.id.btn_all)
@@ -177,7 +191,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupWindowInsets() {
-        // Apply insets to header section using extension function
         headerSection.applyHeaderInsets()
     }
 
@@ -233,27 +246,85 @@ class HomeFragment : Fragment() {
         notificationScheduler.scheduleExpiryChecks()
     }
 
-    private fun setupRecyclerView() {
+    private fun setupRecyclerViews() {
+        // Setup List View
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        listAdapter = GroceryAdapter(filteredGroceryItems, { item ->
+            openItemDetail(item)
+        }, isGridView = false)
+        recyclerView.adapter = listAdapter
 
-        adapter = GroceryAdapter(filteredGroceryItems) { item ->
-            val intent = Intent(requireContext(), ItemDetailActivity::class.java).apply {
-                putExtra("id", item.id)
-                putExtra("name", item.name)
-                putExtra("category", item.category)
-                putExtra("expiryDate", item.expiryDate)
-                putExtra("purchaseDate", item.purchaseDate)
-                putExtra("quantity", item.quantity)
-                putExtra("status", item.status)
-                putExtra("daysLeft", item.daysLeft)
-                putExtra("barcode", item.barcode)
-                putExtra("imageUrl", item.imageUrl)
-                putExtra("isGS1", item.isGS1)
+        // Setup Grid View
+        recyclerViewGrid.layoutManager = GridLayoutManager(requireContext(), 2)
+        gridAdapter = GroceryAdapter(filteredGroceryItems, { item ->
+            openItemDetail(item)
+        }, isGridView = true)
+        recyclerViewGrid.adapter = gridAdapter
+    }
+
+    private fun openItemDetail(item: GroceryItem) {
+        val intent = Intent(requireContext(), ItemDetailActivity::class.java).apply {
+            putExtra("id", item.id)
+            putExtra("name", item.name)
+            putExtra("category", item.category)
+            putExtra("expiryDate", item.expiryDate)
+            putExtra("purchaseDate", item.purchaseDate)
+            putExtra("quantity", item.quantity)
+            putExtra("status", item.status)
+            putExtra("daysLeft", item.daysLeft)
+            putExtra("barcode", item.barcode)
+            putExtra("imageUrl", item.imageUrl)
+            putExtra("isGS1", item.isGS1)
+        }
+        itemDetailLauncher.launch(intent)
+    }
+
+    private fun setupViewToggle() {
+        btnListView.setOnClickListener {
+            if (isGridView) {
+                isGridView = false
+                updateViewToggleState()
+                switchView()
             }
-            itemDetailLauncher.launch(intent)
         }
 
-        recyclerView.adapter = adapter
+        btnGridView.setOnClickListener {
+            if (!isGridView) {
+                isGridView = true
+                updateViewToggleState()
+                switchView()
+            }
+        }
+
+        updateViewToggleState()
+    }
+
+    private fun updateViewToggleState() {
+        if (isGridView) {
+            // Grid view is active
+            btnGridView.setBackgroundResource(R.drawable.view_toggle_selected_bg)
+            btnGridView.imageTintList = ContextCompat.getColorStateList(requireContext(), android.R.color.white)
+
+            btnListView.setBackgroundResource(android.R.color.transparent)
+            btnListView.imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.gray_600)
+        } else {
+            // List view is active
+            btnListView.setBackgroundResource(R.drawable.view_toggle_selected_bg)
+            btnListView.imageTintList = ContextCompat.getColorStateList(requireContext(), android.R.color.white)
+
+            btnGridView.setBackgroundResource(android.R.color.transparent)
+            btnGridView.imageTintList = ContextCompat.getColorStateList(requireContext(), R.color.gray_600)
+        }
+    }
+
+    private fun switchView() {
+        if (isGridView) {
+            recyclerView.visibility = View.GONE
+            recyclerViewGrid.visibility = View.VISIBLE
+        } else {
+            recyclerView.visibility = View.VISIBLE
+            recyclerViewGrid.visibility = View.GONE
+        }
     }
 
     private fun setupFilterButtons() {
@@ -321,7 +392,8 @@ class HomeFragment : Fragment() {
         }
 
         sortGroceryItems()
-        adapter.notifyDataSetChanged()
+        listAdapter.notifyDataSetChanged()
+        gridAdapter.notifyDataSetChanged()
         updateEmptyState()
     }
 
@@ -462,6 +534,7 @@ class HomeFragment : Fragment() {
     private fun updateEmptyState() {
         if (filteredGroceryItems.isEmpty()) {
             recyclerView.visibility = View.GONE
+            recyclerViewGrid.visibility = View.GONE
             emptyState.visibility = View.VISIBLE
 
             val message = when (currentFilter) {
@@ -474,14 +547,15 @@ class HomeFragment : Fragment() {
             }
             tvEmptyMessage.text = message
         } else {
-            recyclerView.visibility = View.VISIBLE
             emptyState.visibility = View.GONE
+            switchView()
         }
     }
 
     private fun showLoading(show: Boolean) {
         loadingIndicator.visibility = if (show) View.VISIBLE else View.GONE
-        recyclerView.visibility = if (show) View.GONE else View.VISIBLE
+        recyclerView.visibility = if (show) View.GONE else if (!isGridView) View.VISIBLE else View.GONE
+        recyclerViewGrid.visibility = if (show) View.GONE else if (isGridView) View.VISIBLE else View.GONE
         emptyState.visibility = View.GONE
     }
 

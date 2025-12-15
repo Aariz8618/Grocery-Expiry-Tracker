@@ -196,7 +196,7 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/right_arrow"
+                        android:src="@drawable/ic_chevron_right"
                         app:tint="@color/white" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

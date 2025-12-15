@@ -29,6 +29,43 @@
             android:textColor="#2D3748"
             android:textSize="24sp" />
 
+        <!-- View Toggle Buttons -->
+        <LinearLayout
+            android:id="@+id/view_toggle_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/view_toggle_bg"
+            android:orientation="horizontal"
+            android:layout_marginEnd="12dp"
+            android:padding="4dp">
+
+            <ImageView
+                android:id="@+id/btn_list_view"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="6dp"
+                android:src="@drawable/ic_list"
+                android:background="@drawable/view_toggle_selected_bg"
+                android:contentDescription="List view"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                app:tint="#FFFFFF" />
+
+            <ImageView
+                android:id="@+id/btn_grid_view"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:padding="6dp"
+                android:src="@drawable/ic_grid"
+                android:background="@android:color/transparent"
+                android:contentDescription="Grid view"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                app:tint="#6B7280" />
+        </LinearLayout>
+
         <ImageView
             android:background="@drawable/circle_icon_bg"
             android:clickable="true"
@@ -50,7 +87,6 @@
         android:layout_width="match_parent"
         android:paddingBottom="8dp"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp"
         android:paddingTop="8dp"
         android:scrollbars="none">
 
@@ -138,17 +174,29 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent">
 
-        <!--  Grocery Items List  -->
+        <!--  Grocery Items List (List View) -->
         <androidx.recyclerview.widget.RecyclerView
             android:clipToPadding="false"
             android:id="@+id/recycler_items"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
             android:paddingBottom="16dp"
+            android:paddingTop="16dp"
+            android:visibility="visible"
+            tools:listitem="@layout/item_grocery" />
+
+        <!--  Grocery Items Grid (Grid View) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:clipToPadding="false"
+            android:id="@+id/recycler_items_grid"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:paddingBottom="16dp"
+            android:paddingTop="16dp"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
-            android:paddingTop="16dp"
-            tools:listitem="@layout/item_grocery" />
+            android:visibility="gone"
+            tools:listitem="@layout/item_grocery_grid" />
 
         <!--  Loading Indicator  -->
         <LinearLayout
