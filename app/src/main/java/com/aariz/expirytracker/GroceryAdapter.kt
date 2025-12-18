@@ -70,6 +70,7 @@ class GroceryAdapter(
         private val statusDot: View = itemView.findViewById(R.id.status_dot)
         private val iconContainer: FrameLayout = itemView.findViewById(R.id.icon_container)
         private val itemEmoji: TextView = itemView.findViewById(R.id.tv_item_emoji)
+        private val itemImage: ImageView = itemView.findViewById(R.id.iv_item_image)
 
         fun bind(item: GroceryItem) {
             // Calculate real-time status
@@ -137,8 +138,8 @@ class GroceryAdapter(
                 }
             }
 
-            // Set item icon/emoji
-            setItemIcon(item, actualStatus)
+            // Set item icon/emoji or image
+            setItemIconOrImage(item, actualStatus)
 
             // Set click listener
             cardView.setOnClickListener {
@@ -146,12 +147,21 @@ class GroceryAdapter(
             }
         }
 
-        private fun setItemIcon(item: GroceryItem, status: String) {
+        private fun setItemIconOrImage(item: GroceryItem, status: String) {
             if (item.imageUrl.isNotEmpty()) {
-                // Hide emoji, show as ImageView placeholder
+                // Load image from Firebase using Glide
                 itemEmoji.visibility = View.GONE
-                // You can add ImageView loading here if needed
+                itemImage.visibility = View.VISIBLE
+
+                Glide.with(itemView.context)
+                    .load(item.imageUrl)
+                    .centerCrop()
+                    .placeholder(R.drawable.ic_image_placeholder)
+                    .error(R.drawable.ic_image_placeholder)
+                    .into(itemImage)
             } else {
+                // Show emoji if no image
+                itemImage.visibility = View.GONE
                 itemEmoji.visibility = View.VISIBLE
                 itemEmoji.text = getCategoryEmoji(item.category)
             }
@@ -257,7 +267,7 @@ class GroceryAdapter(
                     .load(item.imageUrl)
                     .centerCrop()
                     .placeholder(R.drawable.ic_image_placeholder)
-                    .error(R.drawable.ic_image_placeholder) 
+                    .error(R.drawable.ic_image_placeholder)
                     .into(itemImage)
             } else {
                 // Show emoji if no image
@@ -337,7 +347,7 @@ class GroceryAdapter(
             "frozen" -> "🧊"
             "beverages" -> "🥤"
             "cereals" -> "🌾"
-            "sweets" -> "🬬"
+            "sweets" -> "🍬"
             else -> "🛒"
         }
     }
