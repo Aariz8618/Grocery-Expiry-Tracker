@@ -19,6 +19,7 @@ import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
@@ -34,24 +35,38 @@ class AddItemActivity : AppCompatActivity() {
     private lateinit var textCategory: TextView
     private lateinit var textPurchaseDate: TextView
     private lateinit var textExpiryDate: TextView
-    private lateinit var saveButton: LinearLayout
+    private lateinit var inputAmount: EditText
+    private lateinit var inputWeight: EditText
+    private lateinit var textWeightUnit: TextView
+    private lateinit var weightUnitSelector: LinearLayout
+    private lateinit var textStorageLocation: TextView
+    private lateinit var inputNotes: EditText
+    private lateinit var additionalInfoHeader: LinearLayout
+    private lateinit var additionalInfoContent: LinearLayout
+    private lateinit var additionalInfoChevron: ImageView
+    private lateinit var saveButton: MaterialCardView
     private lateinit var loadingOverlay: View
     private lateinit var progressBar: ProgressBar
     private lateinit var productImageView: ImageView
-    private lateinit var barcodeInfoLayout: LinearLayout
+    private lateinit var barcodeInfoLayout: MaterialCardView
     private lateinit var barcodeText: TextView
-    private lateinit var gs1InfoLayout: LinearLayout
+    private lateinit var gs1InfoLayout: MaterialCardView
     private lateinit var gs1InfoText: TextView
-    private lateinit var addImageButton: LinearLayout
-    private lateinit var removeImageButton: ImageView
-
+    private lateinit var addImageButton: MaterialCardView
+    private lateinit var removeImageButton: MaterialCardView
+    private lateinit var buttonScan: MaterialCardView
+    private lateinit var buttonDecrement: ImageView
+    private lateinit var buttonIncrement: ImageView
     private var selectedCategory: String = ""
     private var selectedPurchaseDate: String = ""
     private var selectedExpiryDate: String = ""
+    private var selectedStorageLocation: String = ""
+    private var selectedWeightUnit: String = "kg"
     private var scannedBarcode: String = ""
     private var productImageUrl: String = ""
     private var userUploadedImageUri: Uri? = null
     private var isGS1Code: Boolean = false
+    private var isAdditionalInfoExpanded: Boolean = false
 
     private lateinit var firestoreRepository: FirestoreRepository
     private lateinit var auth: FirebaseAuth
@@ -81,10 +96,10 @@ class AddItemActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         firestoreRepository = FirestoreRepository()
 
+        // Enable edge-to-edge display
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        findViewById<View>(R.id.header_section).applyHeaderInsets()
-        findViewById<View>(R.id.bottom_bar).applyBottomNavInsets()
 
+        // Apply insets AFTER views are initialized
         if (auth.currentUser == null) {
             Toast.makeText(this, "Please login to add items", Toast.LENGTH_SHORT).show()
             finish()
@@ -96,6 +111,17 @@ class AddItemActivity : AppCompatActivity() {
         setupInitialValues()
         setupBackPressedHandler()
         createUserProfileIfNeeded()
+
+        // Apply window insets - moved here after initViews()
+        applyWindowInsets()
+    }
+
+    private fun applyWindowInsets() {
+        // Apply top inset to the header
+        findViewById<View>(R.id.header_section).applyHeaderInsets()
+
+        // Apply bottom inset to the bottom bar (not just the button)
+        findViewById<View>(R.id.bottom_bar).applyBottomNavInsets()
     }
 
     private fun createUserProfileIfNeeded() {
@@ -116,11 +142,27 @@ class AddItemActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
+        // Basic fields
         qtyText = findViewById(R.id.input_quantity)
         inputName = findViewById(R.id.input_name)
         textCategory = findViewById(R.id.text_category)
         textPurchaseDate = findViewById(R.id.text_purchase_date)
         textExpiryDate = findViewById(R.id.text_expiry_date)
+
+        // New fields
+        inputAmount = findViewById(R.id.input_amount)
+        inputWeight = findViewById(R.id.input_weight)
+        textWeightUnit = findViewById(R.id.text_weight_unit)
+        weightUnitSelector = findViewById(R.id.weight_unit_selector)
+
+        // Additional information
+        textStorageLocation = findViewById(R.id.text_storage_location)
+        inputNotes = findViewById(R.id.input_notes)
+        additionalInfoHeader = findViewById(R.id.additional_info_header)
+        additionalInfoContent = findViewById(R.id.additional_info_content)
+        additionalInfoChevron = findViewById(R.id.additional_info_chevron)
+
+        // UI elements
         saveButton = findViewById(R.id.button_save_item)
         loadingOverlay = findViewById(R.id.loading_overlay)
         progressBar = findViewById(R.id.progress_bar)
@@ -131,41 +173,68 @@ class AddItemActivity : AppCompatActivity() {
         gs1InfoText = findViewById(R.id.gs1_info_text)
         addImageButton = findViewById(R.id.add_image_button)
         removeImageButton = findViewById(R.id.remove_image_button)
+        buttonScan = findViewById(R.id.button_scan)
+
+        // Increment/Decrement buttons
+        buttonDecrement = findViewById(R.id.button_decrement)
+        buttonIncrement = findViewById(R.id.button_increment)
+
+        // Add text capitalization watcher
         inputName.addTextChangedListener(TextCapitalizationWatcher())
     }
 
     private fun setupClickListeners() {
+        // Back button
         findViewById<MaterialButton>(R.id.btn_back).setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
 
-        findViewById<LinearLayout>(R.id.button_decrement).setOnClickListener {
+        // Quantity buttons - now ImageViews
+        buttonDecrement.setOnClickListener {
             if (quantity > 1) quantity--
             qtyText.text = quantity.toString()
         }
 
-        findViewById<LinearLayout>(R.id.button_increment).setOnClickListener {
+        buttonIncrement.setOnClickListener {
             quantity++
             qtyText.text = quantity.toString()
         }
 
-        findViewById<LinearLayout>(R.id.category_container).setOnClickListener {
+        // Category selector
+        findViewById<MaterialCardView>(R.id.category_container).setOnClickListener {
             showCategoryDialog()
         }
 
-        findViewById<LinearLayout>(R.id.purchase_date_container).setOnClickListener {
+        // Date pickers
+        findViewById<MaterialCardView>(R.id.purchase_date_container).setOnClickListener {
             showDatePicker(true)
         }
 
-        findViewById<LinearLayout>(R.id.expiry_date_container).setOnClickListener {
+        findViewById<MaterialCardView>(R.id.expiry_date_container).setOnClickListener {
             showDatePicker(false)
         }
 
-        // Main barcode scanner button
-        findViewById<LinearLayout>(R.id.button_scan).setOnClickListener {
+        // Weight unit selector
+        weightUnitSelector.setOnClickListener {
+            showWeightUnitDialog()
+        }
+
+        // Storage location selector
+        findViewById<MaterialCardView>(R.id.storage_location_container).setOnClickListener {
+            showStorageLocationDialog()
+        }
+
+        // Additional information toggle
+        additionalInfoHeader.setOnClickListener {
+            toggleAdditionalInfo()
+        }
+
+        // Barcode scanner button
+        buttonScan.setOnClickListener {
             launchBarcodeScanner()
         }
 
+        // Save button
         saveButton.setOnClickListener {
             saveItemToFirestore()
         }
@@ -184,6 +253,52 @@ class AddItemActivity : AppCompatActivity() {
         removeImageButton.setOnClickListener {
             removeImage()
         }
+    }
+
+    private fun toggleAdditionalInfo() {
+        isAdditionalInfoExpanded = !isAdditionalInfoExpanded
+
+        if (isAdditionalInfoExpanded) {
+            additionalInfoContent.visibility = View.VISIBLE
+            additionalInfoChevron.rotation = 180f
+        } else {
+            additionalInfoContent.visibility = View.GONE
+            additionalInfoChevron.rotation = 0f
+        }
+    }
+
+    private fun showWeightUnitDialog() {
+        val units = arrayOf("kg", "g", "lb", "oz")
+        val currentIndex = units.indexOf(selectedWeightUnit).takeIf { it >= 0 } ?: 0
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Select Weight Unit")
+            .setSingleChoiceItems(units, currentIndex) { dialog, which ->
+                selectedWeightUnit = units[which]
+                textWeightUnit.text = selectedWeightUnit
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun showStorageLocationDialog() {
+        val locations = arrayOf(
+            "Refrigerator",
+            "Freezer",
+            "Pantry",
+            "Kitchen Cabinet",
+            "Dining Room",
+            "Other"
+        )
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Select Storage Location")
+            .setItems(locations) { _, which ->
+                selectedStorageLocation = locations[which]
+                textStorageLocation.text = selectedStorageLocation
+                textStorageLocation.setTextColor(getColor(R.color.gray_800))
+            }
+            .show()
     }
 
     private fun handleImageSelection(uri: Uri) {
@@ -226,7 +341,6 @@ class AddItemActivity : AppCompatActivity() {
         val intent = Intent(this, BarcodeScannerActivity::class.java)
         barcodeScannerLauncher.launch(intent)
     }
-
     private fun handleBarcodeResult(data: Intent) {
         val barcode = data.getStringExtra("barcode") ?: ""
         val originalData = data.getStringExtra("original_data") ?: ""
@@ -331,9 +445,9 @@ class AddItemActivity : AppCompatActivity() {
     private fun displayBarcodeInfo(barcode: String, originalData: String, format: String) {
         barcodeInfoLayout.visibility = View.VISIBLE
         val displayData = if (originalData != barcode && originalData.isNotEmpty()) {
-            "Barcode: $barcode\nOriginal: $originalData\nFormat: $format"
+            "$barcode\nOriginal: $originalData"
         } else {
-            "Barcode: $barcode\nFormat: $format"
+            barcode
         }
         barcodeText.text = displayData
     }
@@ -351,7 +465,7 @@ class AddItemActivity : AppCompatActivity() {
 
         if (gs1Info.isNotEmpty()) {
             gs1InfoLayout.visibility = View.VISIBLE
-            gs1InfoText.text = "GS1 Data:\n${gs1Info.joinToString("\n")}"
+            gs1InfoText.text = gs1Info.joinToString("\n")
         } else {
             gs1InfoLayout.visibility = View.GONE
         }
@@ -407,8 +521,8 @@ class AddItemActivity : AppCompatActivity() {
             .setPositiveButton("Yes") { _, _ ->
                 inputName.setText("")
                 selectedCategory = ""
-                textCategory.text = "Select Category"
-                textCategory.setTextColor(getColor(R.color.gray_600))
+                textCategory.text = "Select category"
+                textCategory.setTextColor(getColor(R.color.gray_400))
 
                 // Don't clear expiry date if it came from GS1 - user might want to keep it
                 if (isGS1Code) {
@@ -419,7 +533,7 @@ class AddItemActivity : AppCompatActivity() {
                         .setNegativeButton("Clear") { _, _ ->
                             selectedExpiryDate = ""
                             textExpiryDate.text = "mm/dd/yyyy"
-                            textExpiryDate.setTextColor(getColor(R.color.gray_600))
+                            textExpiryDate.setTextColor(getColor(R.color.gray_400))
                         }
                         .show()
                 }
@@ -439,10 +553,13 @@ class AddItemActivity : AppCompatActivity() {
         barcodeInfoLayout.visibility = View.GONE
         gs1InfoLayout.visibility = View.GONE
         hideImage()
+
+        // Set default weight unit
+        textWeightUnit.text = selectedWeightUnit
     }
 
     private fun showCategoryDialog() {
-        val categories = arrayOf("Dairy", "Meat", "Vegetables", "Fruits", "Bakery", "Frozen" , "Beverages", "Cereals" , "Sweets" , "Other")
+        val categories = arrayOf("Dairy", "Meat", "Vegetables", "Fruits", "Bakery", "Frozen", "Beverages", "Cereals", "Sweets", "Other")
         MaterialAlertDialogBuilder(this)
             .setTitle("Select Category")
             .setItems(categories) { _, which ->
@@ -480,7 +597,6 @@ class AddItemActivity : AppCompatActivity() {
         if (!isPurchaseDate) datePickerDialog.datePicker.minDate = System.currentTimeMillis()
         datePickerDialog.show()
     }
-
     private fun saveItemToFirestore() {
         val itemName = inputName.text.toString().trim()
         if (itemName.isEmpty()) {
@@ -541,6 +657,11 @@ class AddItemActivity : AppCompatActivity() {
         val itemName = inputName.text.toString().trim()
         val currentUser = auth.currentUser ?: return
 
+        // Get optional fields as strings
+        val amount = inputAmount.text.toString().trim()
+        val weight = inputWeight.text.toString().trim()
+        val notes = inputNotes.text.toString().trim()
+
         val daysLeft = calculateDaysLeft(selectedExpiryDate)
         val status = determineStatus(daysLeft)
         val now = Date()
@@ -553,6 +674,11 @@ class AddItemActivity : AppCompatActivity() {
             expiryDate = selectedExpiryDate,
             purchaseDate = selectedPurchaseDate,
             quantity = quantity,
+            amount = amount,
+            weight = weight,
+            weightUnit = if (weight.isNotEmpty()) selectedWeightUnit else "",
+            storageLocation = selectedStorageLocation,
+            notes = notes,
             status = status,
             daysLeft = daysLeft,
             barcode = scannedBarcode,
@@ -661,7 +787,11 @@ class AddItemActivity : AppCompatActivity() {
                 selectedExpiryDate.isNotEmpty() ||
                 quantity != 1 ||
                 scannedBarcode.isNotEmpty() ||
-                userUploadedImageUri != null
+                userUploadedImageUri != null ||
+                inputAmount.text.toString().trim().isNotEmpty() ||
+                inputWeight.text.toString().trim().isNotEmpty() ||
+                selectedStorageLocation.isNotEmpty() ||
+                inputNotes.text.toString().trim().isNotEmpty()
     }
 
     private fun showDiscardChangesDialog() {

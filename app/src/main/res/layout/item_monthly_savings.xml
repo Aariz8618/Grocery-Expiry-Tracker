@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="16dp">
+
+    <!-- Month Header -->
+    <TextView
+        android:id="@+id/tv_month_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="January 2024"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@color/gray_800"
+        android:layout_marginBottom="10dp" />
+
+    <!-- Items Stats Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <!-- Items Used -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Used"
+                android:textSize="12sp"
+                android:textColor="@color/text_tertiary"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tv_items_used"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="12 items"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/green_600" />
+
+            <TextView
+                android:id="@+id/tv_used_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="₹300"
+                android:textSize="13sp"
+                android:textColor="@color/green_600"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <!-- Items Expired -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Expired"
+                android:textSize="12sp"
+                android:textColor="@color/text_tertiary"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tv_items_expired"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3 items"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/red_600" />
+
+            <TextView
+                android:id="@+id/tv_expired_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="₹75"
+                android:textSize="13sp"
+                android:textColor="@color/red_600"
+                android:layout_marginTop="2dp" />
+        </LinearLayout>
+
+        <!-- Net Savings -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Net Savings"
+                android:textSize="12sp"
+                android:textColor="@color/text_tertiary"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tv_net_savings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="₹225"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/green_primary" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_100"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

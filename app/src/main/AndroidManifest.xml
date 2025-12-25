@@ -46,15 +46,13 @@
         <activity
             android:name=".OnboardingActivity"
             android:exported="false"
-            android:screenOrientation="portrait"
             android:theme="@style/Theme.ExpiryTracker" />
         <activity
             android:name=".RecipeDetailActivity"
             android:exported="false" />
         <activity
             android:name=".FilteredItemsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="false" />
         <activity
             android:name=".NotificationSettingsActivity"
             android:exported="false" />
@@ -91,8 +89,7 @@
             android:exported="false" />
         <activity
             android:name=".PrivacyPolicyActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
+            android:exported="false" />
         <activity
             android:name=".FeedbackActivity"
             android:exported="false"

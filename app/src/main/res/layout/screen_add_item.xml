@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- screen_add_item.xml -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -12,7 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardCornerRadius="0dp"
-        app:strokeColor="@color/white"
+        app:strokeWidth="0dp"
+        app:strokeColor="@color/gray_100"
+        app:cardElevation="2dp"
         app:cardBackgroundColor="@color/white">
 
         <LinearLayout
@@ -21,7 +22,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingBottom="8dp"
+            android:paddingBottom="12dp"
             android:paddingLeft="8dp"
             android:paddingRight="16dp">
 
@@ -34,6 +35,7 @@
                 app:icon="@drawable/left_arrow"
                 app:iconTint="@color/green_primary"
                 app:iconSize="24dp"
+                app:rippleColor="@color/gray_100"
                 style="@style/Widget.Material3.Button.IconButton" />
 
             <TextView
@@ -42,8 +44,8 @@
                 android:text="Add Item"
                 android:textStyle="bold"
                 android:textSize="22sp"
-                android:textColor="@color/black"
-                android:layout_marginLeft="4dp" />
+                android:textColor="@color/gray_800"
+                android:layout_marginLeft="8dp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -54,138 +56,207 @@
         android:layout_below="@id/top_bar"
         android:layout_above="@+id/bottom_bar"
         android:fillViewport="true"
-        android:background="@color/white">
+        android:background="@color/gray_50"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp"
+            android:padding="16dp"
             android:background="@color/white">
 
-            <!-- Barcode Info Section (Initially Hidden) -->
-            <LinearLayout
-                android:id="@+id/barcode_info_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_barcode_info"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-
-                    <TextView
-                        android:id="@+id/barcode_text"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Barcode: 123456789"
-                        android:textSize="12sp"
-                        android:textColor="@color/gray_700"
-                        android:fontFamily="monospace" />
-
-                    <ImageView
-                        android:id="@+id/clear_barcode_button"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_close"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:contentDescription="Clear barcode"
-                        app:tint="@color/gray_600" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- GS1 Info Section (Initially Hidden) -->
-            <LinearLayout
-                android:id="@+id/gs1_info_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/bg_gs1_info"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/gs1_info_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="GS1 Data:\nExpiry: Dec 25, 2025\nBatch: ABC123"
-                    android:textSize="12sp"
-                    android:textColor="@color/gs1_text"
-                    android:fontFamily="monospace" />
-            </LinearLayout>
-
-            <!-- Product Image Section with Add/Remove Image Option -->
+            <!-- Product Image Section - Larger and more prominent -->
             <RelativeLayout
                 android:id="@+id/product_image_container"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="350dp"
+                android:layout_height="180dp"
                 android:layout_gravity="center"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="24dp">
 
                 <ImageView
                     android:id="@+id/product_image_view"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:background="@drawable/bg_image_rounded"
+                    android:background="@drawable/bg_image_rounded_premium"
                     android:visibility="gone"
+                    android:elevation="2dp"
                     android:contentDescription="Product image" />
 
                 <!-- Add Image Button (shown when no image) -->
-                <LinearLayout
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/add_image_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:background="@drawable/bg_dashed_border"
                     android:clickable="true"
                     android:focusable="true"
-                    android:visibility="visible">
+                    android:visibility="visible"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/gray_300"
+                    app:cardBackgroundColor="@color/white">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginBottom="12dp"
+                            android:src="@drawable/ic_camera"
+                            app:tint="@color/gray_500" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Add Photo"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/gray_700"
+                            android:layout_marginBottom="4dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tap to upload"
+                            android:textSize="13sp"
+                            android:textColor="@color/gray_500" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Remove Image Button (shown when image exists) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/remove_image_button"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="-8dp"
+                    android:layout_marginEnd="-8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:visibility="gone"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:strokeWidth="2dp"
+                    app:strokeColor="@color/gray_200"
+                    app:cardBackgroundColor="@color/white">
 
                     <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_camera"
-                        app:tint="@color/gray_500"
-                        android:layout_marginBottom="4dp" />
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_close"
+                        android:contentDescription="Remove image"
+                        app:tint="@color/gray_700" />
+                </com.google.android.material.card.MaterialCardView>
+            </RelativeLayout>
+
+            <!-- Barcode Info Section (Initially Hidden) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/barcode_info_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/info_blue"
+                app:cardBackgroundColor="@color/blue_50">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="BARCODE DETECTED"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/blue_700"
+                            android:letterSpacing="0.05" />
+
+                        <ImageView
+                            android:id="@+id/clear_barcode_button"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_close"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:contentDescription="Clear barcode"
+                            app:tint="@color/blue_700" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/barcode_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="8901234567890"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/blue_700"
+                        android:fontFamily="monospace" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- GS1 Info Section (Initially Hidden) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/gs1_info_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:visibility="gone"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/success_green"
+                app:cardBackgroundColor="@color/green_50">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="14dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Add Photo"
-                        android:textSize="12sp"
-                        android:textColor="@color/gray_600" />
-                </LinearLayout>
+                        android:text="PRODUCT INFORMATION"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/green_dark"
+                        android:letterSpacing="0.05"
+                        android:layout_marginBottom="8dp" />
 
-                <!-- Remove Image Button (shown when image exists) -->
-                <ImageView
-                    android:id="@+id/remove_image_button"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_margin="4dp"
-                    android:src="@drawable/ic_close"
-                    android:background="@drawable/bg_circle_white"
-                    android:padding="6dp"
-                    android:elevation="4dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:visibility="gone"
-                    android:contentDescription="Remove image"
-                    app:tint="@color/gray_700" />
-            </RelativeLayout>
+                    <TextView
+                        android:id="@+id/gs1_info_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Expiry: Dec 25, 2025\nBatch: ABC123"
+                        android:textSize="12sp"
+                        android:textColor="@color/green_primary"
+                        android:fontFamily="monospace"
+                        android:lineSpacingExtra="2dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Item Name Label -->
             <TextView
@@ -193,38 +264,48 @@
                 android:layout_height="wrap_content"
                 android:text="Item Name *"
                 android:textSize="14sp"
-                android:textColor="@color/gray_700"
-                android:layout_marginBottom="8dp" />
+                android:textStyle="bold"
+                android:textColor="@color/green_primary"
+                android:layout_marginBottom="10dp" />
 
             <!-- Item Name Input Field -->
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal"
-                android:padding="12dp"
-                android:background="@drawable/bg_outline_field"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="20dp">
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/gray_200"
+                app:cardBackgroundColor="@color/white">
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/shopping_cart"
-                    app:tint="@color/gray_600" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp">
 
-                <EditText
-                    android:id="@+id/input_name"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:hint="Enter item name"
-                    android:textColorHint="@color/gray_600"
-                    android:textColor="@color/gray_800"
-                    android:background="@android:color/transparent"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:inputType="textCapSentences" />
-            </LinearLayout>
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginRight="12dp"
+                        android:src="@drawable/shopping_cart"
+                        app:tint="@color/gray_600" />
+
+                    <EditText
+                        android:id="@+id/input_name"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:hint="Enter item name"
+                        android:textColorHint="#B0B0B0"
+                        android:textColor="@color/gray_800"
+                        android:background="@android:color/transparent"
+                        android:inputType="textCapSentences" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Category Label -->
             <TextView
@@ -232,264 +313,631 @@
                 android:layout_height="wrap_content"
                 android:text="Category *"
                 android:textSize="14sp"
-                android:textColor="@color/gray_700"
-                android:layout_marginBottom="8dp" />
+                android:textStyle="bold"
+                android:textColor="@color/green_primary"
+                android:layout_marginBottom="10dp" />
 
             <!-- Clickable Category Field -->
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/category_container"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal"
-                android:padding="12dp"
-                android:background="@drawable/bg_outline_field"
-                android:gravity="center_vertical"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:layout_marginBottom="20dp">
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/gray_200"
+                app:cardBackgroundColor="@color/white">
 
-                <TextView
-                    android:id="@+id/text_category"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/text_category"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Select category"
+                        android:textColor="#B0B0B0"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_down"
+                        app:tint="@color/gray_600" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Date Fields Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp"
+                android:weightSum="2">
+
+                <!-- Purchase Date -->
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Select category"
-                    android:textColor="@color/gray_600"
-                    android:textSize="16sp" />
+                    android:orientation="vertical"
+                    android:layout_marginRight="8dp">
 
-                <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:src="@drawable/ic_down"
-                    app:tint="@color/gray_600" />
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Purchase Date"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/green_primary"
+                        android:layout_marginBottom="10dp" />
 
-            <!-- Purchase Date Label -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Purchase Date"
-                android:textSize="14sp"
-                android:textColor="@color/gray_700"
-                android:layout_marginBottom="8dp" />
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/purchase_date_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/gray_200"
+                        app:cardBackgroundColor="@color/white">
 
-            <!-- Clickable Purchase Date Field -->
-            <LinearLayout
-                android:id="@+id/purchase_date_container"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal"
-                android:padding="12dp"
-                android:background="@drawable/bg_outline_field"
-                android:gravity="center_vertical"
-                android:clickable="true"
-                android:focusable="true"
-                android:layout_marginBottom="20dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="12dp"
+                            android:paddingRight="12dp">
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_calendar"
-                    app:tint="@color/gray_600"/>
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginRight="10dp"
+                                android:src="@drawable/ic_calendar"
+                                app:tint="@color/gray_600" />
 
-                <TextView
-                    android:id="@+id/text_purchase_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="mm/dd/yyyy"
-                    android:textColor="@color/gray_600"
-                    android:textSize="16sp"
-                    android:layout_marginStart="12dp" />
-            </LinearLayout>
-
-            <!-- Expiry Date Label -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Expiry Date *"
-                android:textSize="14sp"
-                android:textColor="@color/gray_700"
-                android:layout_marginBottom="8dp" />
-
-            <!-- Clickable Expiry Date Field -->
-            <LinearLayout
-                android:id="@+id/expiry_date_container"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal"
-                android:padding="12dp"
-                android:background="@drawable/bg_outline_field"
-                android:gravity="center_vertical"
-                android:clickable="true"
-                android:focusable="true"
-                android:layout_marginBottom="24dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_calendar"
-                    app:tint="@color/gray_600"/>
-
-                <TextView
-                    android:id="@+id/text_expiry_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="mm/dd/yyyy"
-                    android:textColor="@color/gray_600"
-                    android:textSize="16sp"
-                    android:layout_marginStart="12dp" />
-            </LinearLayout>
-
-            <!-- Quantity Section -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Quantity"
-                android:textSize="14sp"
-                android:textColor="@color/gray_700"
-                android:layout_marginBottom="12dp" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="32dp">
-
-                <!-- Decrement Button -->
-                <LinearLayout
-                    android:id="@+id/button_decrement"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:background="@drawable/bg_outline_button"
-                    android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:contentDescription="Decrement">
-
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_remove"
-                        app:tint="@color/green_primary" />
+                            <TextView
+                                android:id="@+id/text_purchase_date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="mm/dd/yyyy"
+                                android:textColor="#B0B0B0"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
+
+                <!-- Expiry Date -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Expiry Date *"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/green_primary"
+                        android:layout_marginBottom="10dp" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/expiry_date_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/gray_200"
+                        app:cardBackgroundColor="@color/white">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="12dp"
+                            android:paddingRight="12dp">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_marginRight="10dp"
+                                android:src="@drawable/ic_calendar"
+                                app:tint="@color/gray_600" />
+
+                            <TextView
+                                android:id="@+id/text_expiry_date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="mm/dd/yyyy"
+                                android:textColor="#B0B0B0"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Quantity, Amount, and Weight Section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp"
+                android:weightSum="3">
 
                 <!-- Quantity -->
-                <TextView
-                    android:id="@+id/input_quantity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/gray_800"
-                    android:minWidth="48dp"
-                    android:gravity="center"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp" />
-
-                <!-- Increment Button -->
                 <LinearLayout
-                    android:id="@+id/button_increment"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:background="@drawable/bg_outline_button"
-                    android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:contentDescription="Increment">
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginRight="8dp">
 
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:src="@drawable/ic_plus"
-                        app:tint="@color/green_primary" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Quantity"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/green_primary"
+                        android:layout_marginBottom="10dp" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/gray_200"
+                        app:cardBackgroundColor="@color/white">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="8dp"
+                            android:paddingRight="8dp">
+
+                            <!-- Decrement Button -->
+                            <ImageView
+                                android:id="@+id/button_decrement"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:padding="6dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:src="@drawable/ic_remove"
+                                android:contentDescription="Decrement"
+                                app:tint="@color/green_primary" />
+
+                            <!-- Quantity -->
+                            <TextView
+                                android:id="@+id/input_quantity"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="1"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/gray_800"
+                                android:gravity="center" />
+
+                            <!-- Increment Button -->
+                            <ImageView
+                                android:id="@+id/button_increment"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:padding="6dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:src="@drawable/ic_plus"
+                                android:contentDescription="Increment"
+                                app:tint="@color/green_primary" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
 
+                <!-- Amount -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginRight="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Amount"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/green_primary"
+                        android:layout_marginBottom="10dp" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/gray_200"
+                        app:cardBackgroundColor="@color/white">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="12dp"
+                            android:paddingRight="12dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="₹"
+                                android:textColor="@color/gray_600"
+                                android:textStyle="bold"
+                                android:textSize="16sp"
+                                android:layout_marginRight="4dp" />
+
+                            <EditText
+                                android:id="@+id/input_amount"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:hint="0.00"
+                                android:textColorHint="#B0B0B0"
+                                android:textColor="@color/gray_800"
+                                android:background="@android:color/transparent"
+                                android:inputType="numberDecimal" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- Weight -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Weight"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/green_primary"
+                        android:layout_marginBottom="10dp" />
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="1dp"
+                        app:strokeColor="@color/gray_200"
+                        app:cardBackgroundColor="@color/white">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp">
+
+                            <EditText
+                                android:id="@+id/input_weight"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:hint="0"
+                                android:textColorHint="#B0B0B0"
+                                android:textColor="@color/gray_800"
+                                android:background="@android:color/transparent"
+                                android:paddingLeft="12dp"
+                                android:paddingRight="56dp"
+                                android:inputType="numberDecimal" />
+
+                            <LinearLayout
+                                android:id="@+id/weight_unit_selector"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="8dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:orientation="horizontal"
+                                android:gravity="center"
+                                android:paddingLeft="4dp"
+                                android:paddingRight="4dp">
+
+                                <TextView
+                                    android:id="@+id/text_weight_unit"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="kg"
+                                    android:textSize="11sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/gray_600"
+                                    android:layout_marginRight="4dp" />
+
+                                <ImageView
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:src="@drawable/ic_down"
+                                    app:tint="@color/gray_600" />
+                            </LinearLayout>
+                        </RelativeLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Quick Add Section -->
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Additional Information (Collapsible) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/additional_info_card"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Quick Add"
-                android:textSize="14sp"
-                android:textColor="@color/gray_700"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/gray_200"
+                app:cardBackgroundColor="@color/white">
 
-            <LinearLayout
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Header -->
+                    <LinearLayout
+                        android:id="@+id/additional_info_header"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Additional Information"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/green_primary" />
+
+                        <ImageView
+                            android:id="@+id/additional_info_chevron"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_down"
+                            app:tint="@color/gray_600" />
+                    </LinearLayout>
+
+                    <!-- Collapsible Content -->
+                    <LinearLayout
+                        android:id="@+id/additional_info_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:paddingTop="0dp"
+                        android:background="@color/gray_50"
+                        android:visibility="gone">
+
+                        <!-- Storage Location -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Storage Location"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/green_primary"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="10dp" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/storage_location_container"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="0dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="@color/gray_200"
+                            app:cardBackgroundColor="@color/white">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="48dp"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:paddingLeft="12dp"
+                                android:paddingRight="12dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginRight="12dp"
+                                    android:src="@drawable/ic_location"
+                                    app:tint="@color/gray_600" />
+
+                                <TextView
+                                    android:id="@+id/text_storage_location"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Select location"
+                                    android:textColor="@color/gray_400"
+                                    android:textStyle="bold"
+                                    android:textSize="14sp" />
+
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:src="@drawable/ic_down"
+                                    app:tint="@color/gray_600" />
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Notes -->
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Notes"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/green_primary"
+                            android:layout_marginBottom="10dp" />
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="0dp"
+                            app:strokeWidth="1dp"
+                            app:strokeColor="@color/gray_200"
+                            app:cardBackgroundColor="@color/white">
+
+                            <EditText
+                                android:id="@+id/input_notes"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:minHeight="80dp"
+                                android:hint="Add any additional notes..."
+                                android:textColorHint="#B0B0B0"
+                                android:textColor="@color/gray_800"
+                                android:textSize="14sp"
+                                android:background="@android:color/transparent"
+                                android:padding="12dp"
+                                android:gravity="top|start"
+                                android:inputType="textMultiLine|textCapSentences" />
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Scan Barcode Button -->
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/button_scan"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:background="@drawable/bg_filled_green_button"
+                android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
-                android:padding="8dp">
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/green_primary">
 
-                <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:src="@drawable/ic_camera"
-                    android:layout_marginEnd="8dp"
-                    app:tint="@color/white" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:padding="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Scan Barcode"
-                    android:textSize="14sp"
-                    android:textStyle="normal"
-                    android:textColor="@color/white"/>
-            </LinearLayout>
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginRight="12dp"
+                        android:src="@drawable/ic_camera"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Scan Barcode"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </ScrollView>
 
     <!-- Save button pinned bottom -->
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical"
-        android:background="@color/white"
-        android:elevation="8dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="16dp">
+        app:cardCornerRadius="0dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="@color/white">
 
-        <!-- Save button with loading state support -->
         <LinearLayout
-            android:id="@+id/button_save_item"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:background="@drawable/bg_filled_green_button"
-            android:clickable="true"
-            android:focusable="true">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp">
 
-            <!-- Progress indicator (hidden by default) -->
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginEnd="8dp"
-                android:indeterminateTint="@color/white"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/save_button_text"
-                android:layout_width="wrap_content"
+            <!-- Save button with loading state support -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/button_save_item"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Save Item"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:clickable="true"
+                android:focusable="true"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/green_primary">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <!-- Progress indicator (hidden by default) -->
+                    <ProgressBar
+                        android:id="@+id/progress_bar"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="12dp"
+                        android:indeterminateTint="@color/white"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/save_button_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Save Item"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- Loading overlay (covers entire screen during save operation) -->
     <FrameLayout
@@ -501,28 +949,44 @@
         android:clickable="true"
         android:focusable="true">
 
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/bg_loading_dialog"
-            android:orientation="vertical"
-            android:padding="24dp"
-            android:gravity="center">
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="@color/white">
 
-            <ProgressBar
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:indeterminateTint="@color/green_primary"
-                android:layout_marginBottom="16dp" />
-
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Saving item..."
-                android:textColor="@color/gray_800"
-                android:textSize="16sp" />
-        </LinearLayout>
+                android:orientation="vertical"
+                android:padding="32dp"
+                android:gravity="center">
+
+                <ProgressBar
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:indeterminateTint="@color/green_primary"
+                    android:layout_marginBottom="16dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Saving item..."
+                    android:textColor="@color/gray_800"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Please wait"
+                    android:textColor="@color/gray_600"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </FrameLayout>
 
 </RelativeLayout>

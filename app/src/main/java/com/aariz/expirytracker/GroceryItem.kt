@@ -19,9 +19,10 @@ data class GroceryItem(
     val batchLot: String = "", // GS1 batch/lot number
     val serialNumber: String = "", // GS1 serial number
     val weight: String = "", // Weight value from input_weight
-    val weightUnit: String = "", // Weight unit from spinner_weight_unit (kg, g, lbs, oz, L, ml, pieces)
-    val price: String = "", // Price from input_price
-    val store: String = "", // Store name from input_store
+    val weightUnit: String = "", // Weight unit (kg, g, lb, oz)
+    val amount: String = "", // Price/amount from input_amount (renamed from price)
+    val storageLocation: String = "", // Storage location (Refrigerator, Freezer, Pantry, etc.)
+    val store: String = "", // Store name (keeping for backward compatibility)
     val notes: String = "", // User notes from input_notes
     val createdAt: Date = Date(),
     val updatedAt: Date = Date()
@@ -43,7 +44,8 @@ data class GroceryItem(
         serialNumber = "",
         weight = "",
         weightUnit = "",
-        price = "",
+        amount = "",
+        storageLocation = "",
         store = "",
         notes = "",
         createdAt = Date(),

@@ -84,5 +84,10 @@
         <item name="cornerSize">14dp</item>
     </style>
 
+    <!-- Bottom Navigation Indicator Style -->
+    <style name="BottomNavIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/green_100</item>
+    </style>
+
 
 </resources>
