@@ -79,7 +79,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:background="@drawable/bg_image_rounded_premium"
                     android:visibility="gone"
                     android:elevation="2dp"
                     android:contentDescription="Product image" />
